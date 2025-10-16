@@ -66,15 +66,15 @@ public class Ball {
         }
 
         if (atLeftBorder) {
-           setDirectionX(1);
+            setDirectionX(1);
         }
 
         if (atTopBorder) {
             setDirectionY(1);
         }
         if (atBottomBorder) {
-           setDirectionY(0);
-           setDirectionX(0);
+            setDirectionY(0);
+            setDirectionX(0);
         }
 
     }
@@ -87,16 +87,16 @@ public class Ball {
             boolean blockRight = getY() <= b.getY() +  b.getHeight() && getY() >= b.getY() -  getHeight() &&  getX() <= b.getX() +  b.getWidth() + 3 && getX() >= b.getX() +  b.getWidth() - 3;
 
             if (ball_down_block) {
-                group.getChildren().remove(b.getBrick());
+                group.getChildren().remove(b.getBrickImageView());
                 setDirectionY(1);
             } else if (ball_above_block) {
-                group.getChildren().remove(b.getBrick());
+                group.getChildren().remove(b.getBrickImageView());
                 setDirectionY(-1);
             } else if (ball_left_block) {
-                group.getChildren().remove(b.getBrick());
+                group.getChildren().remove(b.getBrickImageView());
                 setDirectionX(-1);
             } else if (blockRight) {
-                group.getChildren().remove(b.getBrick());
+                group.getChildren().remove(b.getBrickImageView());
                 setDirectionX(1);
             }
         }
@@ -139,17 +139,17 @@ public class Ball {
     public double getX() {
         return ball.getCenterX();
     }
-    
+
     public double getY() {
         return ball.getCenterY();
     }
-    
+
     public double getWidth() {
         return ball.getRadius();
     }
-    
+
     public double getHeight() {
         return ball.getRadius();
     }
-    
+
 }

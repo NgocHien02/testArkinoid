@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.BlockBrick;
+import org.example.gamearkanoid.model.GameMap;
 import org.example.gamearkanoid.model.Paddle;
 
 public class GameController {
@@ -27,7 +28,7 @@ public class GameController {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 mousePosX = mouseEvent.getSceneX();
-                originPositionX = ( (Node) mouseEvent.getSource() ).getTranslateX();
+                originPositionX = ((Node) mouseEvent.getSource()).getTranslateX();
             }
         };
 
@@ -35,8 +36,8 @@ public class GameController {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 double amountMove = mouseEvent.getSceneX() - mousePosX;
-                newPositionX =originPositionX + amountMove;
-                ( (Node) mouseEvent.getSource() ).setTranslateX(newPositionX);
+                newPositionX = originPositionX + amountMove;
+                ((Node) mouseEvent.getSource()).setTranslateX(newPositionX);
             }
         };
 
@@ -53,11 +54,12 @@ public class GameController {
                 ballObj.updatePosition();
                 ballObj.checkPaddle(paddle);
                 ballObj.checkBorder(scene);
-                ballObj.checkBlock(blocks, group);
+//                ballObj.checkBlock(blocks, group);
             }
         };
 
         at.start();
 
     }
+
 }
