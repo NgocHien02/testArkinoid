@@ -30,9 +30,10 @@ public class MainApp extends Application {
         }
 
         controller = new GameController(scene, root);
-        ballObject = new Ball(scene.getWidth() / 2 + 50, scene.getHeight() - 150 , 10);
+
+        ballObject = new Ball(scene.getWidth() / 2 + 50, scene.getHeight() - 150);
         paddleObject = new Paddle(scene.getWidth() / 2 , scene.getHeight() - 100);
-        root.getChildren().addAll(ballObject.getBall(), paddleObject.getPaddle());
+        root.getChildren().addAll(ballObject.getBallImgView(), paddleObject.getPaddleImgView());
         controller.dragPaddle(paddleObject);
 
         controller.ballMovement(ballObject, paddleObject, blockObject);

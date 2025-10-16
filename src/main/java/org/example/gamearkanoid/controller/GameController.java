@@ -41,8 +41,8 @@ public class GameController {
             }
         };
 
-        paddle.getPaddle().setOnMousePressed(paddlePress);
-        paddle.getPaddle().setOnMouseDragged(paddleDrag);
+        paddle.getPaddleImgView().setOnMousePressed(paddlePress);
+        paddle.getPaddleImgView().setOnMouseDragged(paddleDrag);
     }
 
     public void ballMovement(Ball ballObj, Paddle paddle, BlockBrick blocks) {
@@ -54,7 +54,7 @@ public class GameController {
                 ballObj.updatePosition();
                 ballObj.checkPaddle(paddle);
                 ballObj.checkBorder(scene);
-//                ballObj.checkBlock(blocks, group);
+                ballObj.checkBlock(blocks, group);
             }
         };
 

@@ -9,7 +9,7 @@ import javafx.scene.shape.Rectangle;
 import java.util.ArrayList;
 
 public class Brick {
-    //    private Image image;
+//    private Image image;
     private ImageView brickImageView;
     private int health;
     private boolean destroyed = false;
