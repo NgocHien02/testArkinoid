@@ -8,11 +8,13 @@ import javafx.scene.image.ImageView;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.example.gamearkanoid.model.GameState;
+
 public class Ball {
     Image image = new Image(getClass().getResourceAsStream("/images/ball.png"),30,30,true,false);
     ImageView ballImgView = new ImageView(image);
 
-    private double speed = 0.5;
+    private double speed = 4.0;
     private int directionX = 1;
     private int directionY = 1;
 
@@ -89,55 +91,67 @@ public class Ball {
             ball.setY(0);     // 2. KẸP LẠI VỊ TRÍ: Đặt bóng nằm sát mép trên
         }
 
-        // Xử lý va chạm biên dưới (Game Over)
+        // --- SỬA ĐỔI LOGIC BIÊN DƯỚI (Hỗ trợ PowerShield) ---
         if (ball.getY() + ball.getFitHeight() > sceneHeight) {
-            // Dừng bóng lại khi chạm đáy
-            setDirectionY(0);
-            setDirectionX(0);
-            // Kẹp lại vị trí để bóng dừng ngay tại mép đáy, không bị lún xuống
-            ball.setY(sceneHeight - ball.getFitHeight());
+            // 1. Kiểm tra xem Shield có đang hoạt động không
+            if (GameState.shieldActive) {
+                setDirectionY(-1); // Bật ngược lên
+                ball.setY(sceneHeight - ball.getFitHeight()); // Kẹp lại vị trí
+                GameState.shieldActive = false; // Tắt khiên (chỉ dùng 1 lần)
 
-            // Tại đây bạn có thể gọi hàm xử lý thua cuộc
-            // handleGameOver();
+            } else {
+                // 2. Logic Game Over như cũ
+                setDirectionY(0);
+                setDirectionX(0);
+                ball.setY(sceneHeight - ball.getFitHeight());
+            }
         }
     }
 
-    public void checkBlock(BlockBrick block, Group group) {
+    /**
+     * Sửa đổi: Trả về Brick bị vỡ để spawn Power-Up
+     * Sửa đổi: Thêm logic cho PowerStrongBall
+     * @return Brick bị vỡ, hoặc null nếu không
+     */
+    public Brick checkBlock(BlockBrick block, Group group) {
         ImageView ball = ballImgView;
         List<Brick> toRemove = new ArrayList<>();
+        Brick brokenBrick = null; // Biến lưu gạch bị vỡ
 
         for (Brick brick : block.getBlock()) {
             if (ball.getBoundsInParent().intersects(brick.getBrickImageView().getBoundsInParent())) {
 
-                // Xác định hướng va chạm
-                double ballCenterX = ball.getX() + ball.getFitWidth() / 2;
-                double ballCenterY = ball.getY() + ball.getFitHeight() / 2;
-                double brickCenterX = brick.getX() + brick.getWidth() / 2;
-                double brickCenterY = brick.getY() + brick.getHeight() / 2;
+                // --- SỬA ĐỔI LOGIC VA CHẠM (Hỗ trợ StrongBall) ---
+                // Chỉ đổi hướng nếu bóng KHÔNG mạnh
+                if (!GameState.strongBallActive) {
+                    double ballCenterX = ball.getX() + ball.getFitWidth() / 2;
+                    double ballCenterY = ball.getY() + ball.getFitHeight() / 2;
+                    double brickCenterX = brick.getX() + brick.getWidth() / 2;
+                    double brickCenterY = brick.getY() + brick.getHeight() / 2;
 
-                double dx = ballCenterX - brickCenterX;
-                double dy = ballCenterY - brickCenterY;
+                    double dx = ballCenterX - brickCenterX;
+                    double dy = ballCenterY - brickCenterY;
 
-                // So sánh độ chênh để biết hướng va chạm
-                if (Math.abs(dx) > Math.abs(dy)) {
-                    // Va chạm theo chiều ngang
-                    setDirectionX(dx > 0 ? 1 : -1);
-                } else {
-                    // Va chạm theo chiều dọc
-                    setDirectionY(dy > 0 ? 1 : -1);
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        setDirectionX(dx > 0 ? 1 : -1);
+                    } else {
+                        setDirectionY(dy > 0 ? 1 : -1);
+                    }
                 }
+                // Nếu bóng mạnh (strongBallActive = true), nó sẽ không đổi hướng
 
-                // Thêm vào danh sách xóa
                 toRemove.add(brick);
-                break; // chỉ xử lý 1 viên mỗi lần
+                brokenBrick = brick; // Lưu lại gạch đã vỡ
+                break;
             }
         }
 
-        // Xóa sau khi kiểm tra xong để tránh lỗi lặp
         for (Brick b : toRemove) {
             group.getChildren().remove(b.getBrickImageView());
             block.getBlock().remove(b);
         }
+
+        return brokenBrick; // Trả về gạch đã vỡ
     }
 
 
