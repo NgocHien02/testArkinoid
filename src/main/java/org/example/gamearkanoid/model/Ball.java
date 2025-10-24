@@ -12,7 +12,7 @@ public class Ball {
     Image image = new Image(getClass().getResourceAsStream("/images/ball.png"),30,30,true,false);
     ImageView ballImgView = new ImageView(image);
 
-    private double speed = 0.5;
+    private double speed = 2.5;
     private int directionX = 1;
     private int directionY = 1;
 
@@ -102,7 +102,7 @@ public class Ball {
         }
     }
 
-    public void checkBlock(BlockBrick block, Group group) {
+    public boolean checkBlock(BlockBrick block, Group group) {
         ImageView ball = ballImgView;
         List<Brick> toRemove = new ArrayList<>();
 
@@ -121,14 +121,20 @@ public class Ball {
                 // So sánh độ chênh để biết hướng va chạm
                 if (Math.abs(dx) > Math.abs(dy)) {
                     // Va chạm theo chiều ngang
-                    setDirectionX(dx > 0 ? 1 : -1);
+                    setDirectionX(getDirectionX() * -1);
                 } else {
                     // Va chạm theo chiều dọc
-                    setDirectionY(dy > 0 ? 1 : -1);
+                    setDirectionY(getDirectionY() * -1);
                 }
+                if (brick.isIndestructible()) {
+                    // Gạch không thể phá -> bỏ qua
+                } else {
+                    brick.takeDamage();
 
-                // Thêm vào danh sách xóa
-                toRemove.add(brick);
+                    if (brick.isDestroyed()) {
+                        toRemove.add(brick);
+                    }
+                }
                 break; // chỉ xử lý 1 viên mỗi lần
             }
         }
@@ -138,8 +144,17 @@ public class Ball {
             group.getChildren().remove(b.getBrickImageView());
             block.getBlock().remove(b);
         }
+        return allDestructibleBricksDestroyed(block);
     }
 
+    private boolean allDestructibleBricksDestroyed(BlockBrick block) {
+        for (Brick brick : block.getBlock()) {
+            if (!brick.isIndestructible()) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public double getSpeed() {
         return speed;
