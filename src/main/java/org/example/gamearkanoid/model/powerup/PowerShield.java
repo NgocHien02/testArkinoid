@@ -18,12 +18,16 @@ public class PowerShield extends PowerUp {
     @Override
     public void applyEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
         GameState.shieldActive = true;
-        // (Bạn có thể thêm 1 ImageView của khiên ở đáy màn hình tại đây)
     }
 
     @Override
     public void removeEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
         // Sẽ bị tắt bởi Ball.java khi va chạm
         GameState.shieldActive = false;
+    }
+
+    @Override
+    public PowerUpType getType() {
+        return PowerUpType.SHIELD;
     }
 }

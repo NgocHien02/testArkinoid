@@ -10,12 +10,14 @@ public class Paddle {
     private ImageView paddleImgView = new ImageView(image);
     private boolean goLeft = false;
     private boolean goRight = false;
-
+    private double originalWidth;
     public Paddle(double x, double y) {
         paddleImgView.setX(x);
         paddleImgView.setY(y);
         paddleImgView.setFitWidth(100);
         paddleImgView.setFitHeight(50);
+        // Lưu lại kích thước gốc khi paddle được tạo ra
+        this.originalWidth = paddleImgView.getFitWidth();
     }
 
 
@@ -42,5 +44,10 @@ public class Paddle {
 
     public void setGoLeft(boolean goLeft) {
         this.goLeft = goLeft;
+    }
+
+    //Lấy chiều rộng gốc 100% của paddle
+    public double getOriginalWidth() {
+        return originalWidth;
     }
 }

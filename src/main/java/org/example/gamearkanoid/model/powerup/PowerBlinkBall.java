@@ -4,12 +4,13 @@ import javafx.scene.Group;
 import javafx.scene.image.Image;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.BlockBrick;
+import org.example.gamearkanoid.model.GameState;
 import org.example.gamearkanoid.model.Paddle;
 import java.util.List;
 
 public class PowerBlinkBall extends PowerUp {
 
-    private static final double DURATION_FRAMES = 10 * 60;
+    private static final double DURATION_FRAMES = 8 * 60; //8 giây
     private List<Ball> targetBalls;
 
     public PowerBlinkBall(double x, double y, Image image) {
@@ -19,10 +20,12 @@ public class PowerBlinkBall extends PowerUp {
     @Override
     public void applyEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
         this.targetBalls = balls; // Lưu lại danh sách bóng
+        GameState.blinkBallActive = true;
     }
 
     @Override
     public void removeEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+        GameState.blinkBallActive = false;
         if (targetBalls != null) {
             for (Ball ball : targetBalls) {
                 ball.getBallImgView().setOpacity(1.0);
@@ -37,10 +40,16 @@ public class PowerBlinkBall extends PowerUp {
 
         // Logic nhấp nháy
         if (isActive() && targetBalls != null) {
-            double opacity = (timer % 20 < 10) ? 0.2 : 1.0;
+            double opacity = (timer % 60 < 30) ? 0.0 : 1.0;
+
             for (Ball ball : targetBalls) {
                 ball.getBallImgView().setOpacity(opacity);
             }
         }
+    }
+
+    @Override
+    public PowerUpType getType() {
+        return PowerUpType.BLINK_BALL;
     }
 }

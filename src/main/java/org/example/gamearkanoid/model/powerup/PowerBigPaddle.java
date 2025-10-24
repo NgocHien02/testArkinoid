@@ -5,13 +5,13 @@ import javafx.scene.image.Image;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.BlockBrick;
 import org.example.gamearkanoid.model.Paddle;
+
 import java.util.List;
 
 public class PowerBigPaddle extends PowerUp {
 
-    private static final double DURATION_FRAMES = 10 * 60; // 10 giây
+    private static final double DURATION_FRAMES = 8 * 60; // 8 giây
     private static final double SCALE_FACTOR = 1.5;
-    private double originalWidth;
     private Paddle targetPaddle;
 
     public PowerBigPaddle(double x, double y, Image image) {
@@ -21,14 +21,21 @@ public class PowerBigPaddle extends PowerUp {
     @Override
     public void applyEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
         this.targetPaddle = paddle;
-        this.originalWidth = paddle.getPaddleImgView().getFitWidth();
-        paddle.getPaddleImgView().setFitWidth(originalWidth * SCALE_FACTOR);
+        // Lấy kích thước gốc 100% THỰC SỰ từ đối tượng paddle
+        double trueOriginalWidth = paddle.getOriginalWidth();
+
+        // Luôn đặt kích thước dựa trên kích thước gốc
+        paddle.getPaddleImgView().setFitWidth(trueOriginalWidth * SCALE_FACTOR);
     }
 
     @Override
     public void removeEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
-        if (targetPaddle != null) {
-            targetPaddle.getPaddleImgView().setFitWidth(originalWidth);
-        }
+        // Trả về kích thước gốc 100% THỰC SỰ
+        targetPaddle.getPaddleImgView().setFitWidth(targetPaddle.getOriginalWidth());
+    }
+
+    @Override
+    public PowerUpType getType() {
+        return PowerUpType.BIG_PADDLE;
     }
 }

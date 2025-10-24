@@ -7,7 +7,7 @@ import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.BlockBrick;
 import org.example.gamearkanoid.model.Paddle;
 
-import java.util.List; // Sửa đổi: Dùng List<Ball>
+import java.util.List;
 
 public abstract class PowerUp {
 
@@ -65,9 +65,22 @@ public abstract class PowerUp {
         return false;
     }
 
-    // --- Các phương thức trừu tượng (Sửa đổi: Dùng List<Ball>) ---
+    //Đặt lại bộ đếm thời gian của Power-Up về giá trị tối đa.
+    public void resetTimer() {
+        if (this.durationInFrames > 0) { // Chỉ reset timer có thời hạn
+            this.timer = this.durationInFrames;
+            System.out.println(this.getClass().getSimpleName() + " timer reset!"); // Dòng test
+        }
+    }
+
+    // --- Các phương thức trừu tượng
     public abstract void applyEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group);
     public abstract void removeEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group);
+
+    /**
+     * Phương thức trừu tượng, buộc các lớp con phải định danh xem chúng thuộc loại Power-Up nào.
+     */
+    public abstract PowerUpType getType();
 
     // --- Getters ---
     public ImageView getImageView() { return imageView; }

@@ -7,7 +7,9 @@ public class PowerUpFactory {
     private static Image GENERIC_POWERUP_IMAGE;
 
     private static Random random = new Random();
-    private static final double DROP_CHANCE = 0.5; // Tỉ lệ rớt đồ
+    private static final double DROP_CHANCE = 0.2; // Tỉ lệ rớt đồ
+
+    private static final PowerUpType[] ALL_POWERUPS = PowerUpType.values();
 
     static {
         loadImages(); // Gọi hàm tải ảnh
@@ -42,17 +44,19 @@ public class PowerUpFactory {
             return null;
         }
 
-        int type = random.nextInt(8); // Vẫn chọn 1 trong 8 loại
+        // Chọn ngẫu nhiên một loại từ danh sách enum
+        PowerUpType randomType = ALL_POWERUPS[random.nextInt(ALL_POWERUPS.length)];
 
-        switch (type) {
-            case 0: return new PowerBigPaddle(x, y, GENERIC_POWERUP_IMAGE);
-            case 1: return new PowerSmallPaddle(x, y, GENERIC_POWERUP_IMAGE);
-            case 2: return new PowerSlowBall(x, y, GENERIC_POWERUP_IMAGE);
-            case 3: return new PowerFastBall(x, y, GENERIC_POWERUP_IMAGE);
-            case 4: return new PowerBlinkBall(x, y, GENERIC_POWERUP_IMAGE);
-            case 5: return new PowerMultiBall(x, y, GENERIC_POWERUP_IMAGE);
-            case 6: return new PowerShield(x, y, GENERIC_POWERUP_IMAGE);
-            case 7: return new PowerStrongBall(x, y, GENERIC_POWERUP_IMAGE);
+        // Dùng 'randomType' trong khối switch
+        switch (randomType) {
+            case BIG_PADDLE: return new PowerBigPaddle(x, y, GENERIC_POWERUP_IMAGE);
+            case SMALL_PADDLE: return new PowerSmallPaddle(x, y, GENERIC_POWERUP_IMAGE);
+            case SLOW_BALL: return new PowerSlowBall(x, y, GENERIC_POWERUP_IMAGE);
+            case FAST_BALL: return new PowerFastBall(x, y, GENERIC_POWERUP_IMAGE);
+            case BLINK_BALL: return new PowerBlinkBall(x, y, GENERIC_POWERUP_IMAGE);
+            case MULTIBALL: return new PowerMultiBall(x, y, GENERIC_POWERUP_IMAGE);
+            case SHIELD: return new PowerShield(x, y, GENERIC_POWERUP_IMAGE);
+            case STRONG_BALL: return new PowerStrongBall(x, y, GENERIC_POWERUP_IMAGE);
             default: return null;
         }
     }

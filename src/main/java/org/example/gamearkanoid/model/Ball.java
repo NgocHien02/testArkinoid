@@ -11,23 +11,34 @@ import java.util.List;
 import org.example.gamearkanoid.model.GameState;
 
 public class Ball {
-    Image image = new Image(getClass().getResourceAsStream("/images/ball.png"),30,30,true,false);
+    Image image = new Image(getClass().getResourceAsStream("/images/ball.png"), 40, 40, true, false);
     ImageView ballImgView = new ImageView(image);
 
-    private double speed = 4.0;
+    private double speed = 3.0;
     private int directionX = 1;
     private int directionY = 1;
+    private final double originalSpeed; // Tốc độ gốc 100%
+    private final double rotationSpeed = 20; //Tốc độ xoay
+
+    private double rotationAngle = 0; // Góc xoay hiện tại
+
 
     public Ball(double x, double y) {
         ballImgView.setX(x);
         ballImgView.setY(y);
-        ballImgView.setFitHeight(30);
-        ballImgView.setFitWidth(30);
+        ballImgView.setFitHeight(40);
+        ballImgView.setFitWidth(40);
+        this.originalSpeed = this.speed; // Lưu tốc độ gốc khi bóng được tạo
     }
 
     public void updatePosition() {
         ballImgView.setX(ballImgView.getX() + directionX * speed);
         ballImgView.setY(ballImgView.getY() + directionY * speed);
+
+        // 1. Cập nhật góc xoay (nó sẽ xoay theo chiều của directionX)
+        rotationAngle += rotationSpeed * directionX;
+        // 2. Áp dụng góc xoay mới cho ImageView
+        ballImgView.setRotate(rotationAngle);
     }
 
     public void checkPaddle(Paddle paddle) {
@@ -75,7 +86,7 @@ public class Ball {
         // Xử lý va chạm biên phải
         if (ball.getX() + ball.getFitWidth() > sceneWidth) { // Dùng > thay vì >= để chắc chắn
             setDirectionX(-1); // 1. Đổi hướng
-            ball.setX(sceneWidth -  ball.getFitWidth()); // 2. KẸP LẠI VỊ TRÍ: Đặt bóng nằm sát mép phải
+            ball.setX(sceneWidth - ball.getFitWidth()); // 2. KẸP LẠI VỊ TRÍ: Đặt bóng nằm sát mép phải
 //            System.out.println(ball.getFitWidth());
         }
 
@@ -111,6 +122,7 @@ public class Ball {
     /**
      * Sửa đổi: Trả về Brick bị vỡ để spawn Power-Up
      * Sửa đổi: Thêm logic cho PowerStrongBall
+     *
      * @return Brick bị vỡ, hoặc null nếu không
      */
     public Brick checkBlock(BlockBrick block, Group group) {
@@ -120,7 +132,11 @@ public class Ball {
 
         for (Brick brick : block.getBlock()) {
             if (ball.getBoundsInParent().intersects(brick.getBrickImageView().getBoundsInParent())) {
-
+                // Kiểm tra xem bóng đã "lên đạn" (armed) chưa
+                if (GameState.strongBallArmed) {
+                    GameState.strongBallActive = true; // Kích hoạt hiệu ứng NGAY BÂY GIỜ
+                    GameState.strongBallArmed = false;  // Và dùng hết "đạn"
+                }
                 // --- SỬA ĐỔI LOGIC VA CHẠM (Hỗ trợ StrongBall) ---
                 // Chỉ đổi hướng nếu bóng KHÔNG mạnh
                 if (!GameState.strongBallActive) {
@@ -154,6 +170,10 @@ public class Ball {
         return brokenBrick; // Trả về gạch đã vỡ
     }
 
+    //Lấy tốc độ gốc 100% của bóng.
+    public double getOriginalSpeed() {
+        return originalSpeed;
+    }
 
     public double getSpeed() {
         return speed;
