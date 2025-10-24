@@ -21,16 +21,47 @@ public class BlockBrick {
 
     private void loadBrickImages() {
         try {
-            Image brick1 = new Image(getClass().getResourceAsStream("/images/123.png"), Brick.DEFAULT_HEIGHT_BRICK, Brick.DEFAULT_WIDTH_BRICK, true, false);
+            // --- GẠCH THƯỜNG (THEO MAP) ---
+            // Gạch 1 máu
+            Image brick1 = new Image(getClass().getResourceAsStream("/images/Brick/brick_1_health.png"), Brick.DEFAULT_WIDTH_BRICK, Brick.DEFAULT_HEIGHT_BRICK, true, false);
             brickImages.put(1, brick1);
 
-            Image brick2 = new Image(getClass().getResourceAsStream("/images/1234.png"), Brick.DEFAULT_HEIGHT_BRICK, Brick.DEFAULT_WIDTH_BRICK, true, false);
+            // Gạch 2 máu
+            Image brick2 = new Image(getClass().getResourceAsStream("/images/Brick/brick_2_health.png"), Brick.DEFAULT_WIDTH_BRICK, Brick.DEFAULT_HEIGHT_BRICK, true, false);
             brickImages.put(2, brick2);
+
+//            // Gạch 3 máu
+//            Image brick3 = new Image(getClass().getResourceAsStream("/images/brick_3.png"), Brick.DEFAULT_WIDTH_BRICK, Brick.DEFAULT_HEIGHT_BRICK, true, false);
+//            brickImages.put(3, brick3);
+
+            // Gạch không thể phá hủy
+            Image brick9 = new Image(getClass().getResourceAsStream("/images/Brick/brick_indestructible.png"), Brick.DEFAULT_WIDTH_BRICK, Brick.DEFAULT_HEIGHT_BRICK, true, false);
+            brickImages.put(9, brick9);
+
+            // --- CÁC TRẠNG THÁI NỨT --- (số máu ban đầu - 0 - số máu còn lại)
+            // Gạch 2 máu bị nứt (còn 1 máu)
+            Image brick201 = new Image(getClass().getResourceAsStream("/images/Brick/brick_2_health_cracked.png"), Brick.DEFAULT_WIDTH_BRICK, Brick.DEFAULT_HEIGHT_BRICK, true, false);
+            brickImages.put(201, brick201);
+
+//            // Gạch 3 máu bị nứt 1 (còn 2 máu)
+//            Image brick302 = new Image(getClass().getResourceAsStream("/images/brick_3_cracked_1.png"), Brick.DEFAULT_WIDTH_BRICK, Brick.DEFAULT_HEIGHT_BRICK, true, false);
+//            brickImages.put(302, brick302);
+//
+//            // Gạch 3 máu bị nứt 2 (còn 1 máu)
+//            Image brick301 = new Image(getClass().getResourceAsStream("/images/brick_3_cracked_2.png"), Brick.DEFAULT_WIDTH_BRICK, Brick.DEFAULT_HEIGHT_BRICK, true, false);
+//            brickImages.put(301, brick301);
 
         } catch (Exception e) {
             System.err.println("Error loading brick images:");
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Lấy hình ảnh theo key (loại gạch)
+     */
+    public Image getImageForType(int type) {
+        return brickImages.get(type);
     }
 
     public void addBrick(int[][] layout) {
@@ -43,7 +74,18 @@ public class BlockBrick {
                 if (brickType > 0) {
                     Image brickImage = brickImages.get(brickType);
                     if (brickImage != null) {
-                        Brick newBrick = new Brick(x, y, brickImage);
+                        // Xác định máu dựa trên loại gạch
+                        int health;
+                        if (brickType == 9) {
+                            health = -1; // -1 là bất tử
+                        } else if (brickType >= 1 && brickType <= 3) {
+                            health = brickType; // Gạch loại 1 có 1 máu, loại 2 có 2 máu,...
+                        } else {
+                            health = 1; // Mặc định là 1 máu nếu loại gạch không xác định
+                        }
+
+                        Brick newBrick = new Brick(x, y, brickImage, health);
+                        newBrick.setBlockBrickManager(this);
                         block.add(newBrick);
                     } else {
                         System.err.println("No image found for brick type");
@@ -54,6 +96,7 @@ public class BlockBrick {
             y = y + Brick.DEFAULT_HEIGHT_BRICK + dy;
         }
     }
+
     public ArrayList<Brick> getBlock() {
         return block;
     }

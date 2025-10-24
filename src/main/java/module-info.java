@@ -7,6 +7,7 @@ module org.example.gamearkanoid {
     requires org.kordamp.bootstrapfx.core;
     requires com.almasb.fxgl.all;
     requires javafx.graphics;
+    requires jdk.compiler;
 
     opens org.example.gamearkanoid to javafx.fxml;
     exports org.example.gamearkanoid;
