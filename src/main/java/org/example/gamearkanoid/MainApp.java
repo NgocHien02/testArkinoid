@@ -10,6 +10,7 @@ import org.example.gamearkanoid.controller.GameController;
 import org.example.gamearkanoid.model.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
+import org.example.gamearkanoid.menu.*;
 
 public class MainApp extends Application {
     private Scene scene;

@@ -9,13 +9,14 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import org.example.gamearkanoid.MainApp;
-import org.example.gamearkanoid.PauseMenu;
-import org.example.gamearkanoid.ScreenManager;
+//import org.example.gamearkanoid.PauseMenu;
+//import org.example.gamearkanoid.ScreenManager;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.BlockBrick;
 import org.example.gamearkanoid.model.GameMap;
 import org.example.gamearkanoid.model.Paddle;
 import javafx.scene.image.ImageView;
+import org.example.gamearkanoid.menu.*;
 
 public class GameController {
     private double originPositionX;

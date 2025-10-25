@@ -1,4 +1,4 @@
-package org.example.gamearkanoid;
+package org.example.gamearkanoid.menu;
 
 import javafx.animation.PauseTransition;
 import javafx.scene.Cursor;
@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.util.Duration;
+import org.example.gamearkanoid.MainApp;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.Paddle;
 

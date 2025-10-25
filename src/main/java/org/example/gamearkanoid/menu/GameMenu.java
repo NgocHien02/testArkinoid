@@ -1,4 +1,4 @@
-package org.example.gamearkanoid;
+package org.example.gamearkanoid.menu;
 
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
+import org.example.gamearkanoid.MainApp;
 
 /**
  * Chịu trách nhiệm cho Menu CHÍNH (Play / Exit).

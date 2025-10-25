@@ -1,4 +1,4 @@
-package org.example.gamearkanoid;
+package org.example.gamearkanoid.menu;
 
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import org.example.gamearkanoid.MainApp;
 import org.example.gamearkanoid.controller.GameController;
 
 import java.util.ArrayList;
