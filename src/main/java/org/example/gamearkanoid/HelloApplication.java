@@ -18,36 +18,16 @@ import java.io.IOException;
 public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        Paddle paddle = new Paddle(350, 750);
-        Enemy enemy1 = new Enemy(0, 0,100, 100, paddle);
-        EnemyView enemyView = new EnemyView("/images/paddle.png", enemy1);
 
-        Button button = new Button("wander");
-        button.setLayoutX(300);
-        button.setLayoutY(300);
-        button.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                button.setText("wandering");
-            }
-        });
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/gamearkanoid/game-view.fxml"));
 
+        Scene scene = new Scene(fxmlLoader.load(), 800, 800);
 
-        AnimationTimer timer = new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-                enemy1.update();
-                enemyView.showWander();
-//                System.out.println(paddle.getX());
-//                System.out.println(paddle.getY());
-            }
-        };
-        Group root = new Group();
-        root.getChildren().addAll(paddle.getPaddleImgView(), enemyView.getImageView(), button);
-        Scene scene = new Scene(root, 800, 800);
-
-        timer.start();
         stage.setScene(scene);
         stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

@@ -15,23 +15,19 @@ public abstract class Sprite extends BaseObject {
         double centerY = getCenterY();
         double targetCenterX = other.getCenterX();
         double targetCenterY = other.getCenterY();
-
-        double targetX = other.getX();
-        double targetY = other.getY();
-
         double dx = Math.abs(targetCenterX - centerX);
         double dy = Math.abs(targetCenterY - centerY);
 
-        boolean checkDx = dx <= (width + other.width) / 2;
-        boolean checkDy = dy <= (height + other.height) / 2;
+        boolean checkDx = dx <= (getWidth() + other.getWidth()) / 2;
+        boolean checkDy = dy <= (getHeight()+ other.getHeight()) / 2;
 
         return checkDx && checkDy;
     }
 
     public Sprite(double x, double y, double width, double height) {
         super(x, y);
-        this.height = height;
-        this.width = width;
+        this.width.set(width);
+        this.height.set(height);
         dirY = 0;
         dirX = 0;
         speed = 0;
@@ -51,23 +47,14 @@ public abstract class Sprite extends BaseObject {
     }
 
     public void move() {
-        x += dirX * speed;
-        y += dirY * speed;
+        setPosition(getX() + dirX * speed, getY() + dirY * speed);
     }
 
     public boolean inScreen() {
-        return (x + dirX * speed + width <= screenHeight
-                && y + dirY * speed + height <= screenHeight
-                && x + dirX * speed >= 0
-                && y + dirY * speed >= 0);
+        return (getX() + dirX * speed + getWidth() <= screenHeight
+                && getY() + dirY * speed + getHeight() <= screenHeight
+                && getX() + dirX * speed >= 0
+                && getY() + dirY * speed >= 0);
     }
-    public double getHeight() {
-        return height;
-    }
-
-    public double getWidth() {
-        return width;
-    }
-
 
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane fx:id="gameAnchor" prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.gamearkanoid.controller.MainController">
+   <children>
+      <ImageView fx:id="heartImg" fitHeight="50.0" fitWidth="200.0" layoutX="550.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@images/paddle.png" />
+         </image>
+      </ImageView>
+      <Label fx:id="scoreText" layoutX="10.0" layoutY="10.0" prefHeight="50.0" prefWidth="140.0" text="SCORE:" AnchorPane.bottomAnchor="740.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="650.0" AnchorPane.topAnchor="10.0">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Label>
+      <Pane fx:id="gamePane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+   </children>
+</AnchorPane>

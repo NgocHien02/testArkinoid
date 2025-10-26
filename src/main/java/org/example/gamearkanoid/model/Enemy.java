@@ -1,7 +1,9 @@
 package org.example.gamearkanoid.model;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 import java.util.Random;
 
@@ -9,46 +11,38 @@ import static org.example.gamearkanoid.model.GameConfig.*;
 
 public class Enemy extends Sprite{
     protected double health;
-    protected double maxHealth;
     protected double damage;
     protected int scoreValue;
     protected Paddle target;
-    protected int attackCoolDown;
-    protected EnemyState currentState;
+    protected ObjectProperty<EnemyState> currentState;
 
     protected Random random;
+    protected double wanderSteerStrength;
 
-    protected enum EnemyState{
+    public enum EnemyState{
         IDLE,
         WANDERING,
         CHASING,
-        ATTACK,
-        DEFENSE
+        ATTACK
     }
 
     protected double detectionRange;
-    protected  int defenseAbility;
-    protected int maxDefense = 11;
 
 
     public Enemy(double x, double y, double width, double height, Paddle target) {
         super(x, y, width, height);
         this.target = target;
-        maxHealth = 10;
-        health = 10;
+        health = 1;
         damage = 1;
         speed = 2;
         scoreValue = 10;
-        attackCoolDown = 1000;
-        random = new Random();
-        defenseAbility = 5;
         random = new Random();
         screenHeight = 800;
         screenWidth = 800;
-
         detectionRange = 400;
-
         setDirection(1,1);
+        this.currentState = new SimpleObjectProperty<>(EnemyState.WANDERING);
+        wanderSteerStrength = 0.5;
 
     }
 
@@ -65,7 +59,7 @@ public class Enemy extends Sprite{
     }
 
     public void executeState() {
-        switch (currentState) {
+        switch (getCurrentState()) {
             case WANDERING:
                 wander();
                 break;
@@ -74,9 +68,6 @@ public class Enemy extends Sprite{
                 break;
             case CHASING:
                 moveToTarget();
-                break;
-            case DEFENSE:
-//                performDefense();
                 break;
             case IDLE:
                 notMove();
@@ -110,43 +101,45 @@ public class Enemy extends Sprite{
             setAlive(false);
         }
         setDirection(0, 0);
-        System.out.println("attacking");
     }
 
-    public void wander() {
 
-        if (inScreen()) {
-            move();
-        }
-        else {
+    public void wander() {
+        if (!inScreen()) {
+
             setDirection(random.nextDouble() * 2 - 1, random.nextDouble() * 2 - 1);
         }
+        else {
 
+            double steerX = (random.nextDouble() - 0.5) * wanderSteerStrength;
+            double steerY = (random.nextDouble() - 0.5) * wanderSteerStrength;
+
+            // Đặt hướng mới = hướng cũ + một chút "lắc"
+            setDirection(this.dirX + steerX, this.dirY + steerY);
+        }
+
+        move();
     }
 
 
     public void updateState() {
 
         if (target == null || !target.isAlive()) {
-            currentState = EnemyState.IDLE;
+            setCurrentState(EnemyState.IDLE);
         }
-
-//        if (beingAttacked() && rand.nextInt() % (maxDefense - defenseAbility) == 0) {
-//            currentState = EnemyState.DEFENSE;
-//        }
         else {
             double distance = distanceToTarget(target);
             System.out.println(target.getX());
             System.out.println(target.getY());
 
             if (checkCollision(target)) {
-                currentState = EnemyState.ATTACK;
-                System.out.println("attack");
+                setCurrentState(EnemyState.ATTACK);
+                System.out.println("attacking");
             } else if (distance <= detectionRange) {
-                currentState = EnemyState.CHASING;
+                setCurrentState(EnemyState.CHASING);
                 System.out.println("chasing");
             } else {
-                currentState = EnemyState.WANDERING;
+                setCurrentState(EnemyState.WANDERING);
                 System.out.println("wandering");
             }
         }
@@ -165,5 +158,16 @@ public class Enemy extends Sprite{
 
     }
 
+    public EnemyState getCurrentState() {
+        return currentState.get();
+    }
+
+    public void setCurrentState(EnemyState currentState) {
+        this.currentState.set(currentState);
+    }
+
+    public ObjectProperty<EnemyState> currentStateProperty() {
+        return currentState;
+    }
 
 }
