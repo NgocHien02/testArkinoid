@@ -34,6 +34,8 @@ public abstract class Sprite extends BaseObject {
 
     }
 
+    public abstract void update();
+
     public void setDirection(double dirX, double dirY) {
         double tmp = Math.sqrt(dirX * dirX + dirY * dirY);
         if (tmp > 0) {
@@ -56,5 +58,14 @@ public abstract class Sprite extends BaseObject {
                 && getX() + dirX * speed >= 0
                 && getY() + dirY * speed >= 0);
     }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
+    }
+
 
 }

@@ -9,14 +9,13 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import org.example.gamearkanoid.MainApp;
-//import org.example.gamearkanoid.PauseMenu;
-//import org.example.gamearkanoid.ScreenManager;
+import org.example.gamearkanoid.menu.PauseMenu;
+import org.example.gamearkanoid.menu.ScreenManager;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.BlockBrick;
 import org.example.gamearkanoid.model.GameMap;
 import org.example.gamearkanoid.model.Paddle;
 import javafx.scene.image.ImageView;
-import org.example.gamearkanoid.menu.*;
 
 public class GameController {
     private double originPositionX;
@@ -62,7 +61,7 @@ public class GameController {
 
     public void ballMovement(Ball ballObj, Paddle paddle, BlockBrick blocks) {
 
-            gameTimer = new AnimationTimer() {
+        gameTimer = new AnimationTimer() {
             @Override
             public void handle(long l) {
                 // update position of ball
@@ -91,8 +90,8 @@ public class GameController {
         // Dùng setOnKeyReleased để tránh bị giữ phím
         scene.setOnKeyReleased(e -> {
             if (e.getCode() == KeyCode.SPACE) {
-                    pauseGame();
-                }
+                pauseGame();
+            }
         });
     }
 

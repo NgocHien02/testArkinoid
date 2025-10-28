@@ -8,7 +8,7 @@ import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 
-public class Brick {
+public class Brick extends BaseObject {
     private ImageView brickImageView;
     private int health;
     private int initialHealth;
@@ -18,12 +18,15 @@ public class Brick {
     public static final double DEFAULT_WIDTH_BRICK = 100;
 
 
-    public Brick(double positionX, double positionY, Image image, int health) {
+    public Brick(double x, double y, Image image, int health) {
+        super(x, y );
         this.brickImageView = new ImageView(image);
-        this.brickImageView.setX(positionX);
-        this.brickImageView.setY(positionY);
+        this.brickImageView.setX(x);
+        this.brickImageView.setY(y);
         this.health = health;
         this.initialHealth = health;
+        setWidth(DEFAULT_WIDTH_BRICK);
+        setHeight(DEFAULT_HEIGHT_BRICK);
     }
 
     public void setBlockBrickManager(BlockBrick blockBrickManager) {

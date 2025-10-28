@@ -30,7 +30,7 @@ public abstract class BaseObject {
     /**
      * logic update (cài theo từng class)
      */
-    public abstract void update();
+
 
 
     public double getX() {return x.get();}
