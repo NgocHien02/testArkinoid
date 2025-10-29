@@ -54,7 +54,7 @@ public class ScreenManager {
      */
     public void showLevelComplete(Ball ballObject, Paddle paddleObject) {
         // 1. Dọn dẹp bóng và paddle khỏi màn hình
-        if (ballObject != null) root.getChildren().remove(ballObject.getBallImgView());
+//        if (ballObject != null) root.getChildren().remove(ballObject.getBallImgView());
         if (paddleObject != null) root.getChildren().remove(paddleObject.getPaddleImgView());
 
         // 2. Hiển thị ảnh "Level Complete"

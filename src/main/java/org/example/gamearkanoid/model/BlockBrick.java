@@ -105,5 +105,9 @@ public class BlockBrick {
         this.block = block;
     }
 
+    public boolean isEmpty() {
+        return block.isEmpty();
+    }
+
 
 }

@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import kotlin.internal.PlatformDependent;
 import org.example.gamearkanoid.MainApp;
 import org.example.gamearkanoid.menu.PauseMenu;
 import org.example.gamearkanoid.menu.ScreenManager;
@@ -27,6 +28,11 @@ public class GameController {
     private PauseMenu pauseMenu;
     private AnimationTimer gameTimer;
     private boolean isPaused = false;
+
+    private Ball ballObj;
+    private Paddle paddle;
+    private BlockBrick block;
+
 
     public GameController(Scene scene, Group group, MainApp mainApp, PauseMenu pauseMenu) {
         this.scene = scene;
@@ -59,34 +65,10 @@ public class GameController {
         paddle.getPaddleImgView().setOnMouseDragged(paddleDrag);
     }
 
-    public void ballMovement(Ball ballObj, Paddle paddle, BlockBrick blocks) {
-
-        gameTimer = new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-                // update position of ball
-                ballObj.updatePosition();
-                ballObj.checkPaddle(paddle);
-                ballObj.checkBorder(scene);
-
-                // 1. checkBlock trả về true nếu hết gạch
-                boolean levelCleared = ballObj.checkBlock(blocks, group);
-                // 2. Nếu thắng
-                if (levelCleared) {
-                    stop();
-                    scene.setOnKeyReleased(null);
-                    mainApp.levelCompleted(); // Báo cho MainApp
-                }
-            }
-        };
-
-        gameTimer.start();
-    }
-
     /**
      * Kích hoạt trình xử lý phím (listener) cho nút SPACE.
      */
-    public void setupPauseHandler() {
+    public void setupPauseHandler () {
         // Dùng setOnKeyReleased để tránh bị giữ phím
         scene.setOnKeyReleased(e -> {
             if (e.getCode() == KeyCode.SPACE) {
@@ -98,22 +80,50 @@ public class GameController {
     /**
      * Dừng game timer và hiển thị menu pause.
      */
-    public void pauseGame() {
+    public void pauseGame () {
         if (isPaused) return; // Tránh gọi nhiều lần
         isPaused = true;
         gameTimer.stop(); // Dừng vòng lặp game
         pauseMenu.show(); // Hiển thị menu pause
     }
 
+
     /**
      * Ẩn menu pause và tiếp tục game timer.
      * Hàm này được gọi từ PauseMenu.
      */
-    public void resumeGame() {
+    public void resumeGame () {
         if (!isPaused) return;
         isPaused = false;
         pauseMenu.hide();
         gameTimer.start();
         setupPauseHandler(); //Kích hoạt lại listener phím SPACE
     }
+
+    public void ballMovement() {
+        gameTimer = new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+//                 update position of ball
+                ballObj.update();
+                // 1. checkBlock trả về true nếu hết gạch
+                boolean levelCleared = block.isEmpty();
+                // 2. Nếu thắng
+                if (levelCleared) {
+                    stop();
+                    scene.setOnKeyReleased(null);
+                    mainApp.levelCompleted(); // Báo cho MainApp
+                }
+            }
+        };
+        gameTimer.start();
+
+
+    }
+
+
+
+
+
+
 }
