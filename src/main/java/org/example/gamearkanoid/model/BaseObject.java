@@ -58,9 +58,6 @@ public abstract class BaseObject {
         return isAlive;
     }
 
-    public void setIsAlive(boolean isAlive) {
-        this.isAlive.set(isAlive);
-    }
 
     public DoubleProperty xProperty() {
         return x;
