@@ -28,6 +28,8 @@ public abstract class Sprite extends BaseObject {
         super(x, y);
         this.width.set(width);
         this.height.set(height);
+        screenHeight = 800;
+        screenWidth = 800;
         dirY = 0;
         dirX = 0;
         speed = 0;

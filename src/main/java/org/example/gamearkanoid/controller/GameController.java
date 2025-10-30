@@ -29,17 +29,21 @@ public class GameController {
     private AnimationTimer gameTimer;
     private boolean isPaused = false;
 
+<<<<<<< Updated upstream
     private Ball ballObj;
     private Paddle paddle;
     private BlockBrick block;
 
 
     public GameController(Scene scene, Group group, MainApp mainApp, PauseMenu pauseMenu) {
+=======
+    public GameController(Scene scene, Group group) {
+>>>>>>> Stashed changes
         this.scene = scene;
         this.group = group;
-        this.mainApp = mainApp;
-        this.pauseMenu = pauseMenu;
-        this.pauseMenu.setGameController(this);
+//        this.mainApp = mainApp;
+//        this.pauseMenu = pauseMenu;
+//        this.pauseMenu.setGameController(this);
 
     }
 
@@ -65,6 +69,34 @@ public class GameController {
         paddle.getPaddleImgView().setOnMouseDragged(paddleDrag);
     }
 
+<<<<<<< Updated upstream
+=======
+    public void ballMovement(Ball ballObj, Paddle paddle, BlockBrick blocks) {
+
+        gameTimer = new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+                // update position of ball
+//                ballObj.updatePosition();
+//                ballObj.checkPaddle(paddle);
+//                ballObj.checkBorder(scene);
+
+                // 1. checkBlock trả về true nếu hết gạch
+//                boolean levelCleared = ballObj.checkBlock(blocks, group);
+                // 2. Nếu thắng
+                boolean levelCleared = false;
+                if (levelCleared) {
+                    stop();
+                    scene.setOnKeyReleased(null);
+                    mainApp.levelCompleted(); // Báo cho MainApp
+                }
+            }
+        };
+
+        gameTimer.start();
+    }
+
+>>>>>>> Stashed changes
     /**
      * Kích hoạt trình xử lý phím (listener) cho nút SPACE.
      */

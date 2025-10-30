@@ -1,20 +1,22 @@
 package org.example.gamearkanoid.model;
 
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
 
 import java.util.List;
 
 public class Ball extends Sprite {
 
-    private BallState currentState;
-    private Sprite paddle;
-    private Sprite brick;
-    private List<Sprite> targetList;
+    private ObjectProperty<BallState> currentState;
+    private Paddle paddle;
+    private Brick brick;
+    private List<Brick> targetList;
     private double ANGLE_SENSITIVITY = 1.0;
     private double PADDLE_INFLUENCE = 0.4;
 
-    private enum BallState{
+    public enum BallState{
         MOVING,
         TOUCH_BORDER,
         TOUCH_BRICK,
@@ -25,38 +27,53 @@ public class Ball extends Sprite {
         dirX = 1;
         dirY = 1;
         speed = 2.5;
+        currentState = new SimpleObjectProperty<>(BallState.MOVING);
+    }
+
+    public void setPaddle(Paddle paddle) {
+        this.paddle = paddle;
+    }
+
+    public void setBrick(Brick brick) {
+        this.brick = brick;
+    }
+
+    public void setTargetList(List<Brick> targetList) {
+        this.targetList = targetList;
     }
 
     @Override
     public void update() {
         updateState();
         executeState();
+        System.out.println(getX() + " " + getY());
     }
 
     private void updateState() {
         if (!inScreen()) {
-            currentState = BallState.TOUCH_BORDER;
+            setCurrentState(BallState.TOUCH_BORDER);
         }
         else {
             if (checkCollision(paddle)) {
-                currentState = BallState.TOUCH_PADDLE;
+                setCurrentState(BallState.TOUCH_PADDLE);
             }
             else if (checkCollision(targetList)) {
-                currentState = BallState.TOUCH_BRICK;
+                setCurrentState(BallState.TOUCH_BRICK);
             }
             else {
-                currentState = BallState.MOVING;
+                setCurrentState(BallState.MOVING);
             }
         }
     }
 
     private void executeState() {
-        switch (currentState) {
+        switch (getCurrentState()) {
             case MOVING:
                 move();
                 break;
             case TOUCH_BRICK:
                 boundBrick();
+                brick.takeDamage();
                 break;
             case TOUCH_BORDER:
                 if (boundBorder() == false) {
@@ -167,10 +184,13 @@ public class Ball extends Sprite {
         // Lưu ý: Tốc độ (this.speed) không đổi trong va chạm phản xạ đơn giản.
     }
 
-    public boolean checkCollision(List<Sprite> list) {
-        for (Sprite target : list) {
+    public boolean checkCollision(List<Brick> list) {
+        for (Brick target : list) {
             if (checkCollision(target)) {
-                list.remove(target);
+                this.brick = target;
+                if (brick.isAlive() == false) {
+                    list.remove(target);
+                }
                 return true;
             }
         }
@@ -227,6 +247,18 @@ public class Ball extends Sprite {
         // Đẩy bóng ra khỏi paddle để tránh bị dính ở khung hình sau.
         // Giả sử bóng va chạm với mặt TRÊN của paddle.
         setY(paddle.getY() - getHeight());
+    }
+
+    public BallState getCurrentState() {
+        return currentState.get();
+    }
+
+    public ObjectProperty<BallState> currentStateProperty() {
+        return currentState;
+    }
+
+    public void setCurrentState(BallState currentState) {
+        this.currentState.set(currentState);
     }
 }
 

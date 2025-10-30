@@ -154,7 +154,7 @@ public class MainApp extends Application {
         clearGameScreen();
         this.currentLevel = levelNumber; // <-- Lưu màn hiện tại
 
-        controller = new GameController(scene, root, this, pauseMenu);
+        controller = new GameController(scene, root);
 
         // 2. Tải map dựa trên levelNumber
         String mapPath = "/maps/lv" + levelNumber + ".txt";
@@ -165,13 +165,13 @@ public class MainApp extends Application {
         blockObject = new BlockBrick();
         blockObject.addBrick(gameMap.getLayout());
         for (Brick brick : blockObject.getBlock()) {
-            root.getChildren().add(brick.getBrickImageView());
+//            root.getChildren().add(brick.getBrickImageView());
         }
 
         // 4. Tạo bóng và paddle
         ballObject = new Ball(scene.getWidth() / 2 + 50, scene.getHeight() - 150);
         paddleObject = new Paddle(scene.getWidth() / 2 , scene.getHeight() - 100);
-        root.getChildren().addAll(ballObject.getBallImgView(), paddleObject.getPaddleImgView());
+//        root.getChildren().addAll(ballObject.getBallImgView(), paddleObject.getPaddleImgView());
 
         // 5. Kích hoạt điều khiển và chuyển động
         controller.dragPaddle(paddleObject);
@@ -185,12 +185,12 @@ public class MainApp extends Application {
     public void clearGameScreen() {
         if (blockObject != null) {
             for (Brick brick : blockObject.getBlock()) {
-                root.getChildren().remove(brick.getBrickImageView());
+//                root.getChildren().remove(brick.getBrickImageView());
             }
             blockObject = null;
         }
         if (ballObject != null) {
-            root.getChildren().remove(ballObject.getBallImgView());
+//            root.getChildren().remove(ballObject.getBallImgView());
             ballObject = null;
         }
         if (paddleObject != null) {

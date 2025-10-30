@@ -12,10 +12,9 @@ import javafx.util.Duration;
 import org.example.gamearkanoid.model.Enemy;
 import org.example.gamearkanoid.model.Paddle;
 
-public class EnemyView {
+public class EnemyView extends BaseView<Enemy> {
 
-    private Enemy enemy;
-    private ImageView imageView;
+//    private Enemy enemy;
     private int currentFrame = 0;
     private int totalFrames = 4;
     private double animationTimer = 0;
@@ -28,25 +27,19 @@ public class EnemyView {
     private static final Image ATTACK_SHEET = new Image(EnemyView.class.getResourceAsStream("/images/enemy_sprite.png"));
 
     public EnemyView(Enemy enemy) {
-       this.enemy = enemy;
-       imageView = new ImageView(WANDER_SHEET);
+        super();
+       this.model = enemy;
+        setImageView(new ImageView(WANDER_SHEET));
        initial();
+        model.currentStateProperty().addListener((obs, oldState, newState) -> {
+            update();});
     }
 
-    private void initial() {
-        imageView.setX(enemy.getX());
-        imageView.setY(enemy.getY());
-        imageView.setFitWidth(enemy.getWidth());
-        imageView.setFitHeight(enemy.getHeight());
-        imageView.xProperty().bind(enemy.xProperty());
-        imageView.yProperty().bind(enemy.yProperty());
-        enemy.currentStateProperty().addListener((obs, oldState, newState) -> {
-            switchAnimation(newState);});
-    }
+
 
     // Cập nhật logic animation (chuyển frame)
     public void update(double delta) {
-        if (enemy.isAlive() == false) {
+        if (model.isAlive() == false) {
             return;
         }
         animationTimer += delta;
@@ -59,12 +52,13 @@ public class EnemyView {
             this.imageView.setViewport(new Rectangle2D(viewportX, 0, frameWidth, frameHeight));
         }
     }
+    @Override
+    public void update() {
 
-    private void switchAnimation(Enemy.EnemyState newState) {
         currentFrame = 0;
         animationTimer = 0;
 
-        switch (newState) {
+        switch (model.getCurrentState()) {
             case IDLE:
                 break;
             case WANDERING:
@@ -83,10 +77,6 @@ public class EnemyView {
 
     }
 
-
-    public ImageView getImageView() {
-        return imageView;
-    }
 
 
 }

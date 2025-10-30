@@ -37,8 +37,7 @@ public class Enemy extends Sprite{
         speed = 2;
         scoreValue = 10;
         random = new Random();
-        screenHeight = 800;
-        screenWidth = 800;
+
         detectionRange = 400;
         setDirection(1,1);
         this.currentState = new SimpleObjectProperty<>(EnemyState.WANDERING);

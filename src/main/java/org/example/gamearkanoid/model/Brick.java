@@ -1,36 +1,24 @@
 package org.example.gamearkanoid.model;
 
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
+
 
 import java.util.ArrayList;
 
-public class Brick extends BaseObject {
-    private ImageView brickImageView;
+public class Brick extends Sprite {
     private int health;
     private int initialHealth;
     private BlockBrick blockBrickManager;
+    private int type;
 
     public static final double DEFAULT_HEIGHT_BRICK = 50;
     public static final double DEFAULT_WIDTH_BRICK = 100;
 
 
-    public Brick(double x, double y, Image image, int health) {
-        super(x, y );
-        this.brickImageView = new ImageView(image);
-        this.brickImageView.setX(x);
-        this.brickImageView.setY(y);
+    public Brick(double x, double y, int health) {
+        super(x, y,DEFAULT_WIDTH_BRICK, DEFAULT_HEIGHT_BRICK );
         this.health = health;
         this.initialHealth = health;
-        setWidth(DEFAULT_WIDTH_BRICK);
-        setHeight(DEFAULT_HEIGHT_BRICK);
-    }
-
-    public void setBlockBrickManager(BlockBrick blockBrickManager) {
-        this.blockBrickManager = blockBrickManager;
     }
 
     public void takeDamage() {
@@ -38,29 +26,11 @@ public class Brick extends BaseObject {
             return;
         }
         health--;
-        if (health > 0) {
-            updateImage();
+        if (health <= 0) {
+            setAlive(false);
         }
     }
 
-    private void updateImage() {
-        Image newImage = null;
-
-        if (initialHealth == 2 && health == 1) {
-            newImage = blockBrickManager.getImageForType(201);
-        }
-//        // Nếu là gạch 3 máu ban đầu
-//        if (initialHealth == 3) {
-//            if (health == 2) {
-//                newImage = blockBrickManager.getImageForType(302); // Lấy ảnh "3_cracked_1"
-//            } else if (health == 1) {
-//                newImage = blockBrickManager.getImageForType(301); // Lấy ảnh "3_cracked_2"
-//            }
-//        }
-        if (newImage != null) {
-            brickImageView.setImage(newImage);
-        }
-    }
 
     /**
      * Kiểm tra xem gạch có bị phá hủy (hết máu)
@@ -76,27 +46,24 @@ public class Brick extends BaseObject {
         return health < 0; // Quy ước máu < 0 là bất tử
     }
 
-    public double getX() {
-        return brickImageView.getX();
+    @Override
+    public void update() {
+
     }
 
-    public double getY() {
-        return brickImageView.getY();
+    public int getHealth() {
+        return health;
     }
 
-    public double getHeight() {
-        return brickImageView.getFitHeight();
+    public int getInitialHealth() {
+        return initialHealth;
     }
 
-    public double getWidth() {
-        return brickImageView.getFitWidth();
+    public int getType() {
+        return type;
     }
 
-    public ImageView getBrickImageView() {
-        return brickImageView;
-    }
-
-    public void setBrickImageView(ImageView brickImageView) {
-        this.brickImageView = brickImageView;
+    public void setType(int type) {
+        this.type = type;
     }
 }

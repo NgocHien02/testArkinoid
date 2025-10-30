@@ -2,39 +2,36 @@ package org.example.gamearkanoid.view;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
+import org.example.gamearkanoid.model.Sprite;
 
-public class BaseView {
+public abstract class BaseView<T extends Sprite> {
 
     protected ImageView imageView;
-    protected int currentFrame;
-    protected int totalFrames;
-    protected double animationTimer;
-    protected double animationInterval;
-    protected double frameWidth, frameHeight;
-
+    protected boolean isvisible;
+    protected T model;
     public BaseView() {
-
-    }
-    // Cập nhật logic animation (chuyển frame)
-    public void update(double delta) {
-
-        animationTimer += delta;
-
-        if (animationTimer >= animationInterval) {
-            animationTimer = 0;
-            currentFrame = (currentFrame + 1) % totalFrames;
-
-            double viewportX = currentFrame * frameWidth;
-            this.imageView.setViewport(new Rectangle2D(viewportX, 0, frameWidth, frameHeight));
-        }
+        isvisible = true;
     }
 
-
+    public void setImageView(ImageView imageView) {
+        this.imageView = imageView;
+    }
 
     public ImageView getImageView() {
         return imageView;
     }
 
+    public abstract void update();
+
+    protected void initial() {
+        imageView.setX(model.getX());
+        imageView.setY(model.getY());
+        imageView.setFitWidth(model.getWidth());
+        imageView.setFitHeight(model.getHeight());
+        imageView.xProperty().bind(model.xProperty());
+        imageView.yProperty().bind(model.yProperty());
+
+    }
 
 
 }
