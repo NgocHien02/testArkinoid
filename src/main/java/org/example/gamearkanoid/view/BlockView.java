@@ -17,7 +17,6 @@ public class BlockView {
     public BlockView(BlockBrick blockBrick) {
         this.blockBrick = blockBrick;
         block = this.blockBrick.getBlock();
-        block = new ArrayList<>();
         viewList = new ArrayList<>();
         // cải tiến để chỉ phải gọi một lần trong cả game
         loadBrickImages();

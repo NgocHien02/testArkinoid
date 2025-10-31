@@ -2,20 +2,14 @@ package org.example.gamearkanoid;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import org.example.gamearkanoid.controller.GameController;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.Brick;
 import org.example.gamearkanoid.model.Enemy;
 import org.example.gamearkanoid.model.Paddle;
 import org.example.gamearkanoid.view.BallView;
-import org.example.gamearkanoid.view.BaseView;
 import org.example.gamearkanoid.view.EnemyView;
 import org.example.gamearkanoid.view.PaddleView;
 
@@ -49,7 +43,7 @@ public class HelloApplication extends Application {
 
         root.getChildren().addAll(eView.getImageView(), ballView.getImageView(), paddleView.getImageView());
         Scene scene = new Scene(root, 800, 800);
-        GameController controller = new GameController(scene, root);
+//        GameController controller = new GameController(scene, root);
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
@@ -67,7 +61,7 @@ public class HelloApplication extends Application {
                 ball.update();
                 paddle.update();
                 paddleView.update();
-                controller.dragPaddle(paddle);
+//                controller.dragPaddle(paddle);
             }
         };
 

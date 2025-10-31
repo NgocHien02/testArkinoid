@@ -6,49 +6,72 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class Paddle extends  Sprite{
-    private Image image = new Image(getClass().getResourceAsStream("/images/paddle.png"), 100, 50, true, false);
-    private ImageView paddleImgView = new ImageView(image);
-    private boolean goLeft = false;
-    private boolean goRight = false;
 
+    enum PaddleState{
+        GO_LEFT,
+        GO_RIGHT,
+        MOUSE_DRAG,
+        IDLE
+    }
+    PaddleState currentState;
     public Paddle(double x, double y) {
         super(x, y, 100, 50);
-        paddleImgView.setX(x);
-        paddleImgView.setY(y);
-        paddleImgView.setFitWidth(100);
-        paddleImgView.setFitHeight(50);
+        speed = 5;
+        currentState = PaddleState.IDLE;
     }
 
     @Override
     public void update() {
-        if (!inScreen()) {
+        executeState();
+    }
 
+    public void executeState() {
+
+        switch (currentState) {
+            case GO_LEFT:
+                setDirection(-1, 0);
+                move();
+                break;
+            case GO_RIGHT:
+                setDirection(1, 0);
+                move();
+                break;
+            case IDLE:
+                setDirection(0, 0);
+            default:
+                setDirection(0, 0);
+        }
+        if (!inScreen()) {
+            System.out.println(getX() + " " + getY());
+
+            setDirection(0, 0);
+            if (getX() <= 0) {
+                setX(0);
+            }
+            else {
+                setX(screenWidth - getWidth());
+            }
+            System.out.println(getX() + " " + getY());
         }
     }
 
-
-    public ImageView getPaddleImgView() {
-        return paddleImgView;
+    public void setCurrentState(PaddleState currentState) {
+        this.currentState = currentState;
     }
 
-    public void setPaddleImgView(ImageView paddleImgView) {
-        this.paddleImgView = paddleImgView;
+    public void goLeft() {
+        setCurrentState(PaddleState.GO_LEFT);
     }
 
-
-    public boolean isGoRight() {
-        return goRight;
+    public void goRight() {
+        setCurrentState(PaddleState.GO_RIGHT);
     }
 
-    public void setGoRight(boolean goRight) {
-        this.goRight = goRight;
+    public void idle() {
+        setCurrentState(PaddleState.IDLE);
     }
 
-    public boolean isGoLeft() {
-        return goLeft;
-    }
-
-    public void setGoLeft(boolean goLeft) {
-        this.goLeft = goLeft;
-    }
+//    public boolean checkLeft() {
+//
+//    }
 }

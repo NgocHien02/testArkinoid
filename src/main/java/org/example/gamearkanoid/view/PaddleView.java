@@ -9,8 +9,7 @@ public class PaddleView extends BaseView<Paddle> {
     private Image image = new Image(getClass().getResourceAsStream("/images/paddle.png"), 100, 50, true, false);
 
     public PaddleView(Paddle paddle) {
-        super();
-        model = paddle;
+        super(paddle);
         setImageView(new ImageView(image));
         initial();
     }

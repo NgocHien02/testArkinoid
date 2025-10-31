@@ -27,8 +27,7 @@ public class EnemyView extends BaseView<Enemy> {
     private static final Image ATTACK_SHEET = new Image(EnemyView.class.getResourceAsStream("/images/enemy_sprite.png"));
 
     public EnemyView(Enemy enemy) {
-        super();
-       this.model = enemy;
+        super(enemy);
         setImageView(new ImageView(WANDER_SHEET));
        initial();
         model.currentStateProperty().addListener((obs, oldState, newState) -> {
@@ -47,7 +46,6 @@ public class EnemyView extends BaseView<Enemy> {
         if (animationTimer >= animationInterval) {
             animationTimer = 0;
             currentFrame = (currentFrame + 1) % totalFrames;
-
             double viewportX = currentFrame * frameWidth;
             this.imageView.setViewport(new Rectangle2D(viewportX, 0, frameWidth, frameHeight));
         }

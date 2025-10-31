@@ -1,7 +1,6 @@
 package org.example.gamearkanoid.controller;
 
 import javafx.animation.AnimationTimer;
-import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
@@ -13,7 +12,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import org.example.gamearkanoid.HelloApplication;
 import org.example.gamearkanoid.model.*;
 import org.example.gamearkanoid.view.BallView;
 import org.example.gamearkanoid.view.BlockView;
@@ -22,6 +20,7 @@ import org.example.gamearkanoid.view.PaddleView;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.example.gamearkanoid.model.GameConfig.*;
 
 public class MainController {
 
@@ -45,46 +44,25 @@ public class MainController {
     private BlockBrick block;
     private BlockView blockView;
     private AnimationTimer animationTimer;
-    private Scene scene;
+//    private Scene scene;
     private GameMap gameMap;
-    private Group root;
+//    private Pane pane;
 
     private Set<KeyCode> activeKeys;
-    private double originPositionX;
+    private double paddleX;
     private double newPositionX, mousePosX;
-
-    public MainController(Scene scene, Group root) {
-        this.scene = scene;
-        this.root = root;
-    }
 
 
     @FXML
     public void initialize() {
-        Paddle paddle = new Paddle(350, 700);
-        Enemy enemy1 = new Enemy(0, 0, 50, 50, paddle);
-        EnemyView enemyView = new EnemyView(enemy1);
-        gamePane.getChildren().addAll(enemyView.getImageView(), paddle.getPaddleImgView());
-        AnimationTimer timer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                double delta = (now - lastUpdate) / 1_000_000_000.0;
-                enemy1.update();
-                enemyView.update(delta);
-                paddle.update();
-
-                lastUpdate = now;
-            }
-        };
-        timer.start();
+        initGame();
 
     }
 
 
     public void initGame() {
-        clearGameScreen();
         // load map
-        String mapPath = "/maps/lv" + levelNumber + ".txt";
+        String mapPath = "/maps/lv" + "1" + ".txt";
         System.out.println(mapPath);
         gameMap = new GameMap(mapPath);
 
@@ -92,65 +70,80 @@ public class MainController {
         block = new BlockBrick();
         block.addBrick(gameMap.getLayout());
         blockView = new BlockView(block);
-        ball = new Ball(scene.getWidth() / 2 + 50, scene.getHeight() - 150);
+        ball = new Ball( GameConfig.SCREEN_WIDTH/ 2 + 50, GameConfig.SCREEN_WIDTH - 150);
         ballView = new BallView(ball);
-        paddle = new Paddle(scene.getWidth() / 2 , scene.getHeight() - 100);
+        paddle = new Paddle(GameConfig.SCREEN_WIDTH/ 2 , GameConfig.SCREEN_HEIGHT - 100);
         paddleView = new PaddleView(paddle);
+        ball.setPaddle(paddle);
+        ball.setBlockBrick(block);
+        gamePane.getChildren().addAll(ballView.getImageView(), paddleView.getImageView());
+        gamePane.getChildren().addAll(blockView.getViewList());
 
-        root.getChildren().addAll(blockView.getViewList());
-        root.getChildren().addAll(ballView.getImageView(), paddleView.getImageView());
 
         activeKeys = new HashSet<>();
-        setupInputHandlers();
+//        setupInputHandlers();
     }
 
     public void runGame() {
         animationTimer = new AnimationTimer() {
             @Override
-            public void handle(long l) {
+            public void handle(long now) {
                 // calculate delta
-
+                double delta = (now - lastUpdate) / 1_000_000_000.0;
+                lastUpdate = now;
                 // update game
                 updateGame();
             }
-        }
+        };
+        animationTimer.start();
     }
 
     public void updateGame() {
+        handleInput();
         ball.update();
         ballView.update();
         paddle.update();
         paddleView.update();
-
     }
 
-
-    public void clearGameScreen() {
-        if (block != null) {
-            for (Brick brick : block.getBlock()) {
-                // @ Nhan fix
-                root.getChildren().remove(brick.getBrickImageView());
-            }
-            block = null;
+    private void handleInput() {
+        if (activeKeys.contains(KeyCode.LEFT)) {
+            paddle.goLeft();
+        }else if (activeKeys.contains(KeyCode.RIGHT)) {
+            paddle.goRight();
         }
-        if (ball != null) {
-            // @ Nhan fix
-            root.getChildren().remove(ball.getBallImgView());
-
-            ball = null;
+        else {
+            paddle.idle();
         }
-        if (paddle!= null) {
-            root.getChildren().remove(paddle.getPaddleImgView());
-            paddle= null;
+        if (activeKeys.contains(KeyCode.SPACE)) {
+            pauseGame();
         }
     }
 
-    public void dragPaddle() {
+    /**
+     * Dừng game timer và hiển thị menu pause.
+     */
+    public void pauseGame () {
+        animationTimer.stop(); // Dừng vòng lặp game
+    }
+
+    /**
+     * Ẩn menu pause và tiếp tục game timer.
+     * Hàm này được gọi từ PauseMenu.
+     */
+    public void resumeGame () {
+        animationTimer.start();
+    }
+
+
+    public void setupInputHandlers(Scene scene) {
+        scene.setOnKeyPressed(keyEvent -> {activeKeys.add(keyEvent.getCode());});
+        scene.setOnKeyReleased(keyEvent -> {activeKeys.remove(keyEvent.getCode());});
         EventHandler<MouseEvent> paddlePress = new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 mousePosX = mouseEvent.getSceneX();
-                originPositionX = ((Node) mouseEvent.getSource()).getTranslateX();
+                paddleX = ((Node) mouseEvent.getSource()).getTranslateX();
             }
         };
 
@@ -158,55 +151,13 @@ public class MainController {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 double amountMove = mouseEvent.getSceneX() - mousePosX;
-                newPositionX = originPositionX + amountMove;
+                newPositionX = paddleX + amountMove;
                 ((Node) mouseEvent.getSource()).setTranslateX(newPositionX);
             }
         };
 
-        paddle.getPaddleImgView().setOnMousePressed(paddlePress);
-        paddle.getPaddleImgView().setOnMouseDragged(paddleDrag);
+        paddleView.getImageView().setOnMousePressed(paddlePress);
+        paddleView.getImageView().setOnMouseDragged(paddleDrag);
     }
-
-    /**
-     * Kích hoạt trình xử lý phím (listener) cho nút SPACE.
-     */
-    public void setupPauseHandler () {
-        // Dùng setOnKeyReleased để tránh bị giữ phím
-        scene.setOnKeyReleased(e -> {
-            if (e.getCode() == KeyCode.SPACE) {
-                pauseGame();
-            }
-        });
-    }
-
-    /**
-     * Dừng game timer và hiển thị menu pause.
-     */
-    public void pauseGame () {
-        if (isPaused) return; // Tránh gọi nhiều lần
-        isPaused = true;
-        gameTimer.stop(); // Dừng vòng lặp game
-        pauseMenu.show(); // Hiển thị menu pause
-    }
-
-
-    /**
-     * Ẩn menu pause và tiếp tục game timer.
-     * Hàm này được gọi từ PauseMenu.
-     */
-    public void resumeGame () {
-        if (!isPaused) return;
-        isPaused = false;
-        pauseMenu.hide();
-        gameTimer.start();
-        setupPauseHandler(); //Kích hoạt lại listener phím SPACE
-    }
-
-
-    public void setupInputHandlers() {
-        scene.setOnKeyPressed(keyEvent -> {activeKeys.add(keyEvent.getCode());});
-        scene.setOnKeyReleased(keyEvent -> {activeKeys.remove(keyEvent.getCode());});
-    }
-
 
 }

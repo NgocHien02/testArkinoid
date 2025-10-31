@@ -12,7 +12,8 @@ public class Ball extends Sprite {
     private ObjectProperty<BallState> currentState;
     private Paddle paddle;
     private Brick brick;
-    private List<Brick> targetList;
+//    private List<Brick> targetList;
+    private BlockBrick blockBrick;
     private double ANGLE_SENSITIVITY = 1.0;
     private double PADDLE_INFLUENCE = 0.4;
 
@@ -38,15 +39,14 @@ public class Ball extends Sprite {
         this.brick = brick;
     }
 
-    public void setTargetList(List<Brick> targetList) {
-        this.targetList = targetList;
+    public void setBlockBrick(BlockBrick blockBrick) {
+        this.blockBrick = blockBrick;
     }
 
     @Override
     public void update() {
         updateState();
         executeState();
-        System.out.println(getX() + " " + getY());
     }
 
     private void updateState() {
@@ -57,7 +57,7 @@ public class Ball extends Sprite {
             if (checkCollision(paddle)) {
                 setCurrentState(BallState.TOUCH_PADDLE);
             }
-            else if (checkCollision(targetList)) {
+            else if (checkCollision(blockBrick.getBlock())) {
                 setCurrentState(BallState.TOUCH_BRICK);
             }
             else {
@@ -68,21 +68,24 @@ public class Ball extends Sprite {
 
     private void executeState() {
         switch (getCurrentState()) {
-            case MOVING:
-                move();
-                break;
             case TOUCH_BRICK:
                 boundBrick();
                 brick.takeDamage();
+                move();
                 break;
             case TOUCH_BORDER:
                 if (boundBorder() == false) {
                     setAlive(false);
                     setDirection(0, 0);
                 }
+                move();
                 break;
             case TOUCH_PADDLE:
                 boundPaddle();
+                move();
+                break;
+            case MOVING:
+                move();
                 break;
             default:
                 break;

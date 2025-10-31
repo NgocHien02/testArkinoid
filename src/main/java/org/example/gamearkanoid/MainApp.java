@@ -2,35 +2,41 @@ package org.example.gamearkanoid;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import org.controlsfx.control.tableview2.filter.filtereditor.SouthFilter;
-import org.example.gamearkanoid.controller.GameController;
-import org.example.gamearkanoid.model.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
-import org.example.gamearkanoid.menu.*;
+import org.example.gamearkanoid.controller.MainController;
+import org.example.gamearkanoid.menu.GameMenu;
+
+import java.io.IOException;
 
 public class MainApp extends Application {
     private Scene scene;
-    private Group root;
-    private Group backgroundGroup;
-    private ImageView bgView1;
-    private ImageView bgView2;
-    private AnimationTimer backgroundTimer;
-    private double scrollSpeed = 0.5; // Tốc độ cuộn
-    private GameController controller;
+    private StackPane rootPane;
+    private Stage mainStage;
 
     // Khai báo các đối tượng menu
     private GameMenu gameMenu;
-    private LevelSelectMenu levelSelectMenu;
-    private ScreenManager screenManager;
-    private PauseMenu pauseMenu;
+//    private LevelSelectMenu levelSelectMenu;
+//    private ScreenManager screenManager;
+//    private PauseMenu pauseMenu;
 
+    private MainController mainController;
 
-    private static final double SCENE_WIDTH = 800;
-    private static final double SCENE_HEIGHT = 800;
+    private enum GameState{
+        PLAYING,
+        MENU,
+        PAUSE
+    }
+    private GameState currentState;
+
+    public static final double SCENE_WIDTH = 800;
+    public static final double SCENE_HEIGHT = 800;
 
     private int currentLevel; // Màn đang chơi
     private int highestLevelUnlocked = 1; // Màn cao nhất đã mở
@@ -38,140 +44,116 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        root = new Group(); // root chính
-        backgroundGroup = new Group(); // Group cho nền
-
-        // Thêm theo thứ tự: nền TRƯỚC, nội dung SAU
-        root.getChildren().addAll(backgroundGroup);
-        scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
-
-        // --- BẮT ĐẦU: THÊM NỀN CHUYỂN ĐỘNG VÀO backgroundGroup ---
-        try {
-            // Đảm bảo bạn có ảnh tại đường dẫn này
-            String bgPath = "/images/game_background.png";
-            Image bgImage = new Image(getClass().getResourceAsStream(bgPath));
-
-            bgView1 = new ImageView(bgImage);
-            bgView1.setFitWidth(SCENE_WIDTH);
-            bgView1.setFitHeight(SCENE_HEIGHT);
-            bgView1.setX(0);
-            bgView1.setY(0); // Ảnh 1 bắt đầu ở (0, 0)
-            bgView1.setTranslateY(0);
-
-            bgView2 = new ImageView(bgImage);
-            bgView2.setFitWidth(SCENE_WIDTH);
-            bgView2.setFitHeight(SCENE_HEIGHT);
-            bgView2.setX(0);
-            bgView2.setY(0); // Ảnh 2 bắt đầu ngay phía trên Ảnh 1
-            bgView2.setTranslateY(-SCENE_HEIGHT);
-
-            // Thêm nền vào backgroundGroup (KHÔNG PHẢI root)
-            backgroundGroup.getChildren().addAll(bgView1, bgView2);
-
-        } catch (Exception e) {
-            System.err.println("Không tải được ảnh nền game: " + e.getMessage());
-        }
-        // --- KẾT THÚC: THÊM NỀN CHUYỂN ĐỘNG ---
-
-
-        // --- BẮT ĐẦU: VÒNG LẶP NỀN (BACKGROUND TIMER) ---
-        // Timer này chạy riêng biệt và liên tục
-        backgroundTimer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                if (bgView1 != null && bgView2 != null) {
-                    double sceneHeight = scene.getHeight();
-
-                    // Di chuyển cả hai ảnh xuống
-                    bgView1.setTranslateY(bgView1.getTranslateY() + scrollSpeed);
-                    bgView2.setTranslateY(bgView2.getTranslateY() + scrollSpeed);
-
-                    // Nếu bg1 cuộn ra khỏi đáy màn hình
-                    if (bgView1.getTranslateY() >= sceneHeight) {
-                        // Đặt nó ngay trên bg2
-                        bgView1.setTranslateY(bgView2.getTranslateY() - sceneHeight);
-                    }
-
-                    // Nếu bg2 cuộn ra khỏi đáy màn hình
-                    if (bgView2.getTranslateY() >= sceneHeight) {
-                        // Đặt nó ngay trên bg1
-                        bgView2.setTranslateY(bgView1.getTranslateY() - sceneHeight);
-                    }
-                }
-            }
-        };
-        backgroundTimer.start(); // <-- CHẠY NGAY LẬP TỨC
-        // --- KẾT THÚC: VÒNG LẶP NỀN ---
-
-
-        // Khởi tạo các menu
-        gameMenu = new GameMenu(root, scene, stage, this);
-        levelSelectMenu = new LevelSelectMenu(root, scene, stage, this);
-        screenManager = new ScreenManager(this, root, scene);
-
-        // PauseMenu
-        pauseMenu = new PauseMenu(root, scene, this);
+//        root = new Group(); // root chính
+//        // Khởi tạo các menu
+//        gameMenu = new GameMenu(root, scene, stage, this);
+//        levelSelectMenu = new LevelSelectMenu(root, scene, stage, this);
+//        screenManager = new ScreenManager(this, root, scene);
+//
+//        // PauseMenu
+//        pauseMenu = new PauseMenu(root, scene, this);
 
         // Hiển thị menu chính đầu tiên
-        showMainMenu();
+//        showMainMenu();
 
+        this.mainStage = stage;
+        rootPane = new StackPane();
+        scene = new Scene(rootPane, SCENE_WIDTH, SCENE_HEIGHT);
+        initialMenu();
         stage.setScene(scene);
         stage.setTitle("Arkanoid Game");
         stage.show();
     }
 
-    public void levelCompleted() {
-        screenManager.showLevelComplete(ballObject, paddleObject);
+
+    public void initialMenu() {
+        gameMenu = new GameMenu(SCENE_WIDTH, SCENE_HEIGHT);
+        gameMenu.setOnExitRequest(() ->{
+            mainStage.close();
+            });
+
+        gameMenu.setOnPlayRequest(() ->{
+            gameMenu.getPane().setVisible(false);
+            gameMenu.detachControls(scene);
+            try {
+                initGame();
+                mainController.setupInputHandlers(scene);
+                mainController.runGame();
+//                mainController.pauseGame();
+                currentState = GameState.PLAYING;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        gameMenu.getPane().setVisible(false);
+        rootPane.getChildren().add(gameMenu.getPane());
+        gameMenu.showMenu(scene);
     }
 
-    public void processNextLevel() {
-        int nextLevel = currentLevel + 1;
+    public void initGame() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gamearkanoid/game-view.fxml"));
 
-        // Mở khóa màn tiếp theo
-        if (nextLevel > highestLevelUnlocked && nextLevel <= TOTAL_LEVELS) {
-            highestLevelUnlocked = nextLevel;
-        }
-
-        // Chuyển sang màn tiếp theo hoặc màn "Win"
-        if (nextLevel <= TOTAL_LEVELS) {
-            startGame(nextLevel);
-        } else {
-            showWinScreen(); // <-- Gọi màn hình "Win"
-        }
+        AnchorPane anchorPane = loader.load();
+        mainController = loader.getController();
+        anchorPane.setVisible(true);
+        anchorPane.toFront();
+        rootPane.getChildren().add(anchorPane);
     }
 
 
+//    public void levelCompleted() {
+//        screenManager.showLevelComplete(ballObject, paddleObject);
+//    }
+//
+//    public void processNextLevel() {
+//        int nextLevel = currentLevel + 1;
+//
+//        // Mở khóa màn tiếp theo
+//        if (nextLevel > highestLevelUnlocked && nextLevel <= TOTAL_LEVELS) {
+//            highestLevelUnlocked = nextLevel;
+//        }
+//
+//        // Chuyển sang màn tiếp theo hoặc màn "Win"
+//        if (nextLevel <= TOTAL_LEVELS) {
+//            startGame(nextLevel);
+//        } else {
+//            showWinScreen(); // <-- Gọi màn hình "Win"
+//        }
+//    }
 
 
 
 
-    /**
-     * Được gọi bởi LevelSelectMenu (nút Back) để quay lại menu chính.
-     */
-    public void showMainMenu() {
-        clearGameScreen();
-        screenManager.clearWinScreen();
-        gameMenu.show();
-    }
 
-    /**
-     * Được gọi bởi GameMenu (nút Play) để hiển thị menu chọn level.
-     */
-    public void showLevelSelect() {
-        levelSelectMenu.show();
-    }
 
-    public void showWinScreen() {
-        screenManager.showWinScreen();
-    }
-
-    public int getHighestLevelUnlocked() {
-        return highestLevelUnlocked;
-    }
-
-    public int getCurrentLevel() {
-        return currentLevel;
-    }
+//    /**
+//     * Được gọi bởi LevelSelectMenu (nút Back) để quay lại menu chính.
+//     */
+//    public void showMainMenu() {
+//        clearGameScreen();
+//        screenManager.clearWinScreen();
+//        gameMenu.show();
+//    }
+//
+//    /**
+//     * Được gọi bởi GameMenu (nút Play) để hiển thị menu chọn level.
+//     */
+//    public void showLevelSelect() {
+//        levelSelectMenu.show();
+//    }
+//
+//    public void showWinScreen() {
+//        screenManager.showWinScreen();
+//    }
+//
+//    public int getHighestLevelUnlocked() {
+//        return highestLevelUnlocked;
+//    }
+//
+//    public int getCurrentLevel() {
+//        return currentLevel;
+//    }
 
     public static void main(String[] args) {
         launch(args);

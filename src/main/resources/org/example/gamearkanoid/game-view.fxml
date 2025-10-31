@@ -10,6 +10,7 @@
 
 <AnchorPane fx:id="gameAnchor" prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.gamearkanoid.controller.MainController">
    <children>
+       <Pane fx:id="gamePane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
       <ImageView fx:id="heartImg" fitHeight="50.0" fitWidth="200.0" layoutX="550.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@images/paddle.png" />
@@ -20,6 +21,5 @@
             <Font size="15.0" />
          </font>
       </Label>
-      <Pane fx:id="gamePane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
    </children>
 </AnchorPane>
