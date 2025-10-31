@@ -28,11 +28,6 @@ public class MainApp extends Application {
     private ScreenManager screenManager;
     private PauseMenu pauseMenu;
 
-    // Các đối tượng game (sẽ được tạo trong startGame)
-    private GameMap gameMap;
-    private BlockBrick blockObject;
-    private Ball ballObject;
-    private Paddle paddleObject;
 
     private static final double SCENE_WIDTH = 800;
     private static final double SCENE_HEIGHT = 800;
@@ -145,59 +140,10 @@ public class MainApp extends Application {
         }
     }
 
-    /**
-     * Được gọi bởi LevelSelectMenu để bắt đầu màn chơi.
-     * @param levelNumber Số thứ tự của level (1, 2, 3...)
-     */
-    public void startGame(int levelNumber) {
-        // 1. Dọn dẹp màn hình (xóa menu)
-        clearGameScreen();
-        this.currentLevel = levelNumber; // <-- Lưu màn hiện tại
 
-        controller = new GameController(scene, root);
 
-        // 2. Tải map dựa trên levelNumber
-        String mapPath = "/maps/lv" + levelNumber + ".txt";
-        System.out.println(mapPath);
-        gameMap = new GameMap(mapPath);
 
-        // 3. Tạo gạch (blockObject)
-        blockObject = new BlockBrick();
-        blockObject.addBrick(gameMap.getLayout());
-        for (Brick brick : blockObject.getBlock()) {
-//            root.getChildren().add(brick.getBrickImageView());
-        }
 
-        // 4. Tạo bóng và paddle
-        ballObject = new Ball(scene.getWidth() / 2 + 50, scene.getHeight() - 150);
-        paddleObject = new Paddle(scene.getWidth() / 2 , scene.getHeight() - 100);
-//        root.getChildren().addAll(ballObject.getBallImgView(), paddleObject.getPaddleImgView());
-
-        // 5. Kích hoạt điều khiển và chuyển động
-        controller.dragPaddle(paddleObject);
-        controller.ballMovement(ballObject, paddleObject, blockObject);
-        controller.setupPauseHandler();
-    }
-
-    /**
-     * Xóa các đối tượng game hiện tại khỏi root.
-     */
-    public void clearGameScreen() {
-        if (blockObject != null) {
-            for (Brick brick : blockObject.getBlock()) {
-//                root.getChildren().remove(brick.getBrickImageView());
-            }
-            blockObject = null;
-        }
-        if (ballObject != null) {
-//            root.getChildren().remove(ballObject.getBallImgView());
-            ballObject = null;
-        }
-        if (paddleObject != null) {
-            root.getChildren().remove(paddleObject.getPaddleImgView());
-            paddleObject = null;
-        }
-    }
 
     /**
      * Được gọi bởi LevelSelectMenu (nút Back) để quay lại menu chính.

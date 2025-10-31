@@ -8,6 +8,8 @@ module org.example.gamearkanoid {
     requires com.almasb.fxgl.all;
     requires javafx.graphics;
     requires jdk.compiler;
+    requires org.example.gamearkanoid;
+    requires javafx.base;
 //    requires org.example.gamearkanoid;
     opens org.example.gamearkanoid.controller to javafx.fxml;
     opens org.example.gamearkanoid to javafx.fxml;

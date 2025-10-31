@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.Map;
 
 public class BlockBrick  {
-    private List<Brick> block = new ArrayList<>();
+    private List<Brick> block;
     private double dx = 10;
     private double dy = 10;
 
 
 
     public BlockBrick() {
-
+        block = new ArrayList<>();
     }
 
     public void addBrick(int[][] layout) {
@@ -42,9 +42,9 @@ public class BlockBrick  {
                         newBrick.setType(brickType);
                         block.add(newBrick);
                 }
-                x = x + Brick.DEFAULT_WIDTH_BRICK + dx;
+                x = x + Brick.WIDTH+ dx;
             }
-            y = y + Brick.DEFAULT_HEIGHT_BRICK + dy;
+            y = y + Brick.HEIGHT+ dy;
         }
     }
 
@@ -59,6 +59,5 @@ public class BlockBrick  {
     public boolean isEmpty() {
         return block.isEmpty();
     }
-
 
 }

@@ -8,10 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BrickView extends BaseView<Brick>{
-    //default image
-    private Image image = new Image(getClass().getResourceAsStream("/images/Brick/brick_1_health.png"), Brick.DEFAULT_WIDTH_BRICK, Brick.DEFAULT_HEIGHT_BRICK, true, false);
-    public BrickView() {
-        super();
+
+    Image image;
+    public BrickView(Brick brick, Image image) {
+        super(brick);
+        this.image = image;
         setImageView(new ImageView(image));
         initial();
     }

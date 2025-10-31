@@ -11,12 +11,12 @@ public class Brick extends Sprite {
     private BlockBrick blockBrickManager;
     private int type;
 
-    public static final double DEFAULT_HEIGHT_BRICK = 50;
-    public static final double DEFAULT_WIDTH_BRICK = 100;
+    public static final double HEIGHT = 50;
+    public static final double WIDTH = 100;
 
 
     public Brick(double x, double y, int health) {
-        super(x, y,DEFAULT_WIDTH_BRICK, DEFAULT_HEIGHT_BRICK );
+        super(x, y,WIDTH, HEIGHT );
         this.health = health;
         this.initialHealth = health;
     }

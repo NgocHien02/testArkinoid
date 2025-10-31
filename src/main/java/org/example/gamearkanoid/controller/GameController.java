@@ -19,8 +19,14 @@ import org.example.gamearkanoid.model.Paddle;
 import javafx.scene.image.ImageView;
 
 public class GameController {
-    private double originPositionX;
-    private double newPositionX, mousePosX;
+
+    private AnimationTimer gameLoop;
+    private enum GameState{
+        PLAYING,
+        PAUSE
+    }
+    GameState currentSate;
+
     private Scene scene;
     private Group group;
 
@@ -29,115 +35,25 @@ public class GameController {
     private AnimationTimer gameTimer;
     private boolean isPaused = false;
 
-<<<<<<< Updated upstream
-    private Ball ballObj;
-    private Paddle paddle;
-    private BlockBrick block;
 
 
-    public GameController(Scene scene, Group group, MainApp mainApp, PauseMenu pauseMenu) {
-=======
     public GameController(Scene scene, Group group) {
->>>>>>> Stashed changes
         this.scene = scene;
         this.group = group;
-//        this.mainApp = mainApp;
-//        this.pauseMenu = pauseMenu;
-//        this.pauseMenu.setGameController(this);
 
     }
 
-    public void dragPaddle(Paddle paddle) {
-        EventHandler<MouseEvent> paddlePress = new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                mousePosX = mouseEvent.getSceneX();
-                originPositionX = ((Node) mouseEvent.getSource()).getTranslateX();
-            }
-        };
-
-        EventHandler<MouseEvent> paddleDrag = new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                double amountMove = mouseEvent.getSceneX() - mousePosX;
-                newPositionX = originPositionX + amountMove;
-                ((Node) mouseEvent.getSource()).setTranslateX(newPositionX);
-            }
-        };
-
-        paddle.getPaddleImgView().setOnMousePressed(paddlePress);
-        paddle.getPaddleImgView().setOnMouseDragged(paddleDrag);
-    }
-
-<<<<<<< Updated upstream
-=======
-    public void ballMovement(Ball ballObj, Paddle paddle, BlockBrick blocks) {
-
-        gameTimer = new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-                // update position of ball
-//                ballObj.updatePosition();
-//                ballObj.checkPaddle(paddle);
-//                ballObj.checkBorder(scene);
-
-                // 1. checkBlock trả về true nếu hết gạch
-//                boolean levelCleared = ballObj.checkBlock(blocks, group);
-                // 2. Nếu thắng
-                boolean levelCleared = false;
-                if (levelCleared) {
-                    stop();
-                    scene.setOnKeyReleased(null);
-                    mainApp.levelCompleted(); // Báo cho MainApp
-                }
-            }
-        };
-
-        gameTimer.start();
-    }
-
->>>>>>> Stashed changes
-    /**
-     * Kích hoạt trình xử lý phím (listener) cho nút SPACE.
-     */
-    public void setupPauseHandler () {
-        // Dùng setOnKeyReleased để tránh bị giữ phím
-        scene.setOnKeyReleased(e -> {
-            if (e.getCode() == KeyCode.SPACE) {
-                pauseGame();
-            }
-        });
-    }
-
-    /**
-     * Dừng game timer và hiển thị menu pause.
-     */
-    public void pauseGame () {
-        if (isPaused) return; // Tránh gọi nhiều lần
-        isPaused = true;
-        gameTimer.stop(); // Dừng vòng lặp game
-        pauseMenu.show(); // Hiển thị menu pause
-    }
 
 
-    /**
-     * Ẩn menu pause và tiếp tục game timer.
-     * Hàm này được gọi từ PauseMenu.
-     */
-    public void resumeGame () {
-        if (!isPaused) return;
-        isPaused = false;
-        pauseMenu.hide();
-        gameTimer.start();
-        setupPauseHandler(); //Kích hoạt lại listener phím SPACE
-    }
+
+
 
     public void ballMovement() {
         gameTimer = new AnimationTimer() {
             @Override
             public void handle(long l) {
 //                 update position of ball
-                ballObj.update();
+                ball.update();
                 // 1. checkBlock trả về true nếu hết gạch
                 boolean levelCleared = block.isEmpty();
                 // 2. Nếu thắng
@@ -152,10 +68,5 @@ public class GameController {
 
 
     }
-
-
-
-
-
 
 }
