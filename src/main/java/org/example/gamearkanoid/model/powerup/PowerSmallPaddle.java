@@ -1,36 +1,41 @@
 package org.example.gamearkanoid.model.powerup;
 
-import javafx.scene.Group;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.BlockBrick;
-import org.example.gamearkanoid.model.Paddle;
+import org.example.gamearkanoid.view.BallView;
+import org.example.gamearkanoid.view.PaddleView;
+
 import java.util.List;
 
 public class PowerSmallPaddle extends PowerUp {
 
     private static final double DURATION_FRAMES = 8 * 60; // 8 giây
     private static final double SCALE_FACTOR = 0.7;
-    private Paddle targetPaddle;
+    private PaddleView targetPaddle;
 
     public PowerSmallPaddle(double x, double y, Image image) {
         super(x, y, image, DURATION_FRAMES);
     }
 
     @Override
-    public void applyEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void applyEffect(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane pane) {
         this.targetPaddle = paddle;
         // Lấy kích thước gốc 100% THỰC SỰ từ đối tượng paddle
-        double trueOriginalWidth = paddle.getOriginalWidth();
+        double trueOriginalWidth = paddle.getModel().getOriginalWidth();
         // Luôn đặt kích thước dựa trên kích thước gốc
-        paddle.getPaddleImgView().setFitWidth(trueOriginalWidth * SCALE_FACTOR);
+        paddle.getImageView().setFitWidth(trueOriginalWidth * SCALE_FACTOR);
+        paddle.getModel().setWidth(trueOriginalWidth * SCALE_FACTOR);
     }
 
     @Override
-    public void removeEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void removeEffect(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane pane) {
         if (targetPaddle != null) {
             // Trả về kích thước gốc 100% THỰC SỰ
-            targetPaddle.getPaddleImgView().setFitWidth(targetPaddle.getOriginalWidth());
+            targetPaddle.getImageView().setFitWidth(targetPaddle.getModel().getOriginalWidth());
+            targetPaddle.getModel().setWidth(targetPaddle.getModel().getOriginalWidth());
+
         }
     }
 

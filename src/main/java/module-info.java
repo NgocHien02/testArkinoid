@@ -10,6 +10,7 @@ module org.example.gamearkanoid {
     requires jdk.compiler;
 //    requires org.example.gamearkanoid;
     requires javafx.base;
+    requires java.desktop;
 //    requires org.example.gamearkanoid;
     opens org.example.gamearkanoid.controller to javafx.fxml;
     opens org.example.gamearkanoid to javafx.fxml;

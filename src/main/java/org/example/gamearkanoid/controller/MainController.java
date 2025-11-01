@@ -18,8 +18,8 @@ import org.example.gamearkanoid.view.BlockView;
 import org.example.gamearkanoid.view.EnemyView;
 import org.example.gamearkanoid.view.PaddleView;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+
 import org.example.gamearkanoid.model.GameConfig.*;
 
 public class MainController {
@@ -43,6 +43,8 @@ public class MainController {
     private BallView ballView;
     private BlockBrick block;
     private BlockView blockView;
+    private List<Ball> ballList;
+    private List<BallView> ballViewList;
     private AnimationTimer animationTimer;
 //    private Scene scene;
     private GameMap gameMap;
@@ -51,6 +53,10 @@ public class MainController {
     private Set<KeyCode> activeKeys;
     private double paddleX;
     private double newPositionX, mousePosX;
+
+    // Đối tượng quản lý chuyên biệt cho Power-Up
+    private PowerUpManager powerUpManager;
+    private double originPositionX;
 
 
     @FXML
@@ -78,6 +84,12 @@ public class MainController {
         ball.setBlockBrick(block);
         gamePane.getChildren().addAll(ballView.getImageView(), paddleView.getImageView());
         gamePane.getChildren().addAll(blockView.getViewList());
+        ballList = new ArrayList<>();
+        ballViewList = new ArrayList<>();
+        ballViewList.add(ballView);
+        ballList.add(ball);
+        this.powerUpManager = new PowerUpManager(gamePane);
+
 
 
         activeKeys = new HashSet<>();
@@ -100,12 +112,52 @@ public class MainController {
 
     public void updateGame() {
         handleInput();
-        ball.update();
-        ballView.update();
+        ballUpdate();
         paddle.update();
         paddleView.update();
         block.update();
         blockView.update(gamePane);
+    }
+
+    public void ballUpdate() {
+        List<Ball> deadBall = new ArrayList<>();
+        List<BallView> deadview = new ArrayList<>();
+
+        Iterator<BallView> ballIterator = ballViewList.iterator();
+        while (ballIterator.hasNext()) {
+            BallView ballObj = ballIterator.next();
+            if (!ballObj.getModel().isAlive()) {
+                deadBall.add(ballObj.getModel());
+                deadview.add(ballObj);
+                continue;
+            }
+            // 1a. Cập nhật vị trí và va chạm
+            ballObj.getModel().update();
+            ballObj.update();
+            // 1b. Va chạm gạch
+            Brick brokenBrick = ballObj.getModel().getBrick();
+            // 1c. Ủy quyền cho PowerUpManager:
+            // "Thông báo" cho Manager biết có gạch vỡ, Manager sẽ tự xử lý việc thả Power-Up
+            powerUpManager.spawnPowerUp(brokenBrick);
+            if (ballObj.getModel().getDirX() == 0 && ballObj.getModel().getDirY() == 0) {
+                ballObj.getModel().setAlive(false);
+            }
+        }
+
+        ballList.removeAll(deadBall);
+        ballViewList.remove(deadview);
+
+        // === 2. VÒNG LẶP QUẢN LÝ POWER-UP (Đã được ủy thác) ===
+        // Chỉ cần gọi 1 dòng. PowerUpManager sẽ tự lo mọi thứ:
+        // (Cho item rơi, đếm ngược timer, kiểm tra va chạm paddle, kích hoạt hiệu ứng, ...)
+        powerUpManager.update(paddleView, ballViewList, ballList, block);
+
+        // === 3. XỬ LÝ GAME OVER ===
+        if (ballList.isEmpty()) {
+            System.out.println("GAME OVER");
+            // game over
+        }
+
     }
 
     private void handleInput() {
@@ -141,25 +193,33 @@ public class MainController {
     public void setupInputHandlers(Scene scene) {
         scene.setOnKeyPressed(keyEvent -> {activeKeys.add(keyEvent.getCode());});
         scene.setOnKeyReleased(keyEvent -> {activeKeys.remove(keyEvent.getCode());});
-        EventHandler<MouseEvent> paddlePress = new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                mousePosX = mouseEvent.getSceneX();
-                paddleX = ((Node) mouseEvent.getSource()).getTranslateX();
-            }
-        };
 
-        EventHandler<MouseEvent> paddleDrag = new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                double amountMove = mouseEvent.getSceneX() - mousePosX;
-                newPositionX = paddleX + amountMove;
-                ((Node) mouseEvent.getSource()).setTranslateX(newPositionX);
-            }
-        };
+        // bỏ điều khiển bằng chuột
 
-        paddleView.getImageView().setOnMousePressed(paddlePress);
-        paddleView.getImageView().setOnMouseDragged(paddleDrag);
+//        EventHandler<MouseEvent> paddlePress = new EventHandler<MouseEvent>() {
+//            @Override
+//            public void handle(MouseEvent mouseEvent) {
+//                mousePosX = mouseEvent.getSceneX();
+//                originPositionX = ((Node) mouseEvent.getSource()).getLayoutX(); // Lấy vị trí layout thật
+//                System.out.println(originPositionX);
+//            }
+//        };
+//
+//        EventHandler<MouseEvent> paddleDrag = new EventHandler<MouseEvent>() {
+//            @Override
+//            public void handle(MouseEvent mouseEvent) {
+//                double amountMove = mouseEvent.getSceneX() - mousePosX;
+//                newPositionX = originPositionX + amountMove;
+//
+//                Node paddleV = (Node) mouseEvent.getSource();
+//                paddleV.setLayoutX(newPositionX); // Gắn vị trí layout thật thay vì translate
+////                System.out.println(paddleV.getLayoutX());
+//            }
+//        };
+//
+//
+//        paddleView.getImageView().setOnMousePressed(paddlePress);
+//        paddleView.getImageView().setOnMouseDragged(paddleDrag);
     }
 
     public Pane getGamePane() {

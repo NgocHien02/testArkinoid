@@ -1,17 +1,18 @@
 package org.example.gamearkanoid.model.powerup;
 
-import javafx.scene.Group;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.BlockBrick;
-import org.example.gamearkanoid.model.Paddle;
+import org.example.gamearkanoid.view.BallView;
+import org.example.gamearkanoid.view.PaddleView;
+
 import java.util.List;
 import java.util.Random;
 
 public class PowerMultiBall extends PowerUp {
 
     private Random random = new Random();
-
     //Thời gian hiệu lực
     private static final double DURATION_FRAMES = 6 * 60; //6 giây
     // Thời gian bắt đầu nhấp nháy báo hiệu
@@ -21,35 +22,38 @@ public class PowerMultiBall extends PowerUp {
     }
 
     @Override
-    public void applyEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void applyEffect(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane pane) {
         if (balls.isEmpty()) return;
 
         // Lấy bóng đầu tiên làm mẫu
-        Ball originalBall = balls.get(0);
+        Ball originalBall = balls.get(0).getModel();
 
         // Tạo thêm 2 quả bóng mới (tổng cộng sẽ có 3)
         int newBallsCount = 2;
 
         for (int i = 0; i < newBallsCount; i++) {
-            Ball newBall = new Ball(originalBall.getBallImgView().getX(), originalBall.getBallImgView().getY());
+            Ball newBall = new Ball(originalBall.getX(), originalBall.getY());
 
             // Lấy tốc độ gốc 100% từ bóng mẫu
             newBall.setSpeed(originalBall.getOriginalSpeed());
 
-            newBall.setDirectionX(random.nextBoolean() ? 1 : -1);
-            newBall.setDirectionY(-1);
+            newBall.setDirection(random.nextBoolean() ? 1 : -1, -1);
             // Không cần logic 'isOriginal'
+            newBall.setPaddle(paddle.getModel());
+            newBall.setBlockBrick(blocks);
 
+            BallView ballView = new BallView(newBall);
             // THÊM VÀO 2 NƠI:
-            balls.add(newBall);                                // 1. Danh sách quản lý chính
-            group.getChildren().add(newBall.getBallImgView()); // 2. Thêm ảnh vào Scene
+            balls.add(ballView);                                // 1. Danh sách quản lý chính
+            ballList.add(newBall);
+            pane.getChildren().add(ballView.getImageView()); // 2. Thêm ảnh vào Scene
         }
     }
 
     @Override
-    public void update(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void update(PaddleView paddle, List<BallView> balls, List<Ball> ballList,  BlockBrick blocks, Pane pane) {
         // Gọi update của cha để đếm ngược thời gian
-        super.update(paddle, balls, blocks, group);
+        super.update(paddle, balls, ballList, blocks, pane);
 
         // Nếu power-up không hoạt động, không làm gì cả
         if (!isActive()) return;
@@ -58,32 +62,32 @@ public class PowerMultiBall extends PowerUp {
         if (this.timer <= WARNING_FRAMES) {
             double opacity = (timer % 20 < 10) ? 0.0 : 1.0;
             // Áp dụng cho TẤT CẢ các bóng trong danh sách
-            for (Ball ball : balls) {
-                ball.getBallImgView().setOpacity(opacity);
+            for (BallView ball : balls) {
+                ball.getImageView().setOpacity(opacity);
             }
         } else {
             // Khi chưa đến 3 giây cuối, đảm bảo tất cả bóng đều hiện rõ
-            for (Ball ball : balls) {
-                ball.getBallImgView().setOpacity(1.0);
+            for (BallView ball : balls) {
+                ball.getImageView().setOpacity(1.0);
             }
         }
     }
     @Override
-    public void removeEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void removeEffect(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane pane) {
 
         // Vòng lặp: Xóa ngẫu nhiên các bóng miễn là còn nhiều hơn 1 quả
         while (balls.size() > 1) {
             // Chọn 1 quả bóng ngẫu nhiên từ danh sách
-            Ball ballToRemove = balls.get(random.nextInt(balls.size()));
+            BallView ballToRemove = balls.get(random.nextInt(balls.size()));
 
             // Xóa nó khỏi 2 nơi
-            group.getChildren().remove(ballToRemove.getBallImgView());
+            pane.getChildren().remove(ballToRemove.getImageView());
             balls.remove(ballToRemove);
         }
 
         // Đảm bảo quả bóng CUỐI CÙNG còn lại phải hiện rõ
         if (!balls.isEmpty()) {
-            balls.get(0).getBallImgView().setOpacity(1.0);
+            balls.get(0).getImageView().setOpacity(1.0);
         }
     }
 

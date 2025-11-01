@@ -4,10 +4,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BlockBrick  {
     private List<Brick> block;
@@ -61,10 +58,13 @@ public class BlockBrick  {
     }
 
     public void update() {
-        for (Brick brick : block) {
-            if (brick.isAlive() == false) {
-                block.remove(brick);
+        Iterator<Brick> iterator = block.iterator();
+        while (iterator.hasNext()) {
+            Brick brick = iterator.next();
+            if (!brick.isAlive()) {
+                iterator.remove(); // ✅ an toàn
             }
         }
+
     }
 }

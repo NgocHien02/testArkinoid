@@ -69,5 +69,11 @@ public abstract class Sprite extends BaseObject {
         this.speed = speed;
     }
 
+    public double getDirX() {
+        return dirX;
+    }
 
+    public double getDirY() {
+        return dirY;
+    }
 }

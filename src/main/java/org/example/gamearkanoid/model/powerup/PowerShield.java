@@ -1,11 +1,13 @@
 package org.example.gamearkanoid.model.powerup;
 
-import javafx.scene.Group;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.BlockBrick;
 import org.example.gamearkanoid.model.GameState;
-import org.example.gamearkanoid.model.Paddle;
+import org.example.gamearkanoid.view.BallView;
+import org.example.gamearkanoid.view.PaddleView;
+
 import java.util.List;
 
 public class PowerShield extends PowerUp {
@@ -16,12 +18,12 @@ public class PowerShield extends PowerUp {
     }
 
     @Override
-    public void applyEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void applyEffect(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane pane) {
         GameState.shieldActive = true;
     }
 
     @Override
-    public void removeEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void removeEffect(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane pane) {
         // Sẽ bị tắt bởi Ball.java khi va chạm
         GameState.shieldActive = false;
     }

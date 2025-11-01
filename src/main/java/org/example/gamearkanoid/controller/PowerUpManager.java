@@ -1,11 +1,14 @@
 package org.example.gamearkanoid.controller; // Hoặc package bạn muốn
 
+import javafx.scene.layout.Pane;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.BlockBrick;
 import org.example.gamearkanoid.model.Brick;
 import org.example.gamearkanoid.model.Paddle;
 import org.example.gamearkanoid.model.powerup.*;
 import javafx.scene.Group;
+import org.example.gamearkanoid.view.BallView;
+import org.example.gamearkanoid.view.PaddleView;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,9 +30,9 @@ public class PowerUpManager {
     private List<PowerUp> activePowerUps = new ArrayList<>();
 
     // Cần Group để thêm/xóa hình ảnh Power-Up
-    private Group group;
+    private Pane group;
 
-    public PowerUpManager(Group group) {
+    public PowerUpManager(Pane group) {
         this.group = group;
     }
 
@@ -60,14 +63,14 @@ public class PowerUpManager {
      * Được gọi mỗi frame từ GameController (trong AnimationTimer).
      * Đây là "trái tim" của logic Power-Up.
      */
-    public void update(Paddle paddle, List<Ball> balls, BlockBrick blocks) {
+    public void update(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks) {
         Iterator<PowerUp> powerUpIterator = activePowerUps.iterator();
 
         while (powerUpIterator.hasNext()) {
             PowerUp p = powerUpIterator.next();
 
             // Cập nhật (cho rơi hoặc đếm ngược)
-            p.update(paddle, balls, blocks, group);
+            p.update(paddle, balls,ballList, blocks, group);
 
             // Kiểm tra va chạm với paddle
             if (!p.isCollected() && p.checkPaddleCollision(paddle)) {
@@ -90,7 +93,7 @@ public class PowerUpManager {
                 }
 
                 if (!effectAlreadyActive) {
-                    p.activate(paddle, balls, blocks, group);
+                    p.activate(paddle, balls, ballList, blocks, group);
                 }
                 group.getChildren().remove(p.getImageView());
 

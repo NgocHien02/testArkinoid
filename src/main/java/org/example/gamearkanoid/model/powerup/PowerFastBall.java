@@ -1,11 +1,13 @@
 package org.example.gamearkanoid.model.powerup;
 
-import javafx.scene.Group;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.BlockBrick;
 import org.example.gamearkanoid.model.GameState;
-import org.example.gamearkanoid.model.Paddle;
+import org.example.gamearkanoid.view.BallView;
+import org.example.gamearkanoid.view.PaddleView;
+
 import java.util.List;
 
 public class PowerFastBall extends PowerUp {
@@ -19,40 +21,40 @@ public class PowerFastBall extends PowerUp {
         super(x, y, image, DURATION_FRAMES);
     }
 
-    public void applyEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void applyEffect(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane pane) {
         // Phương thức này CẦN PHẢI TỒN TẠI để thỏa mãn lớp cha PowerUp.
         // Logic thực tế đã được chuyển vào update().
     }
 
     @Override
-    public void removeEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void removeEffect(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane pane) {
         if (balls.isEmpty()) return;
-        double trueOriginalSpeed = balls.get(0).getOriginalSpeed();
+        double trueOriginalSpeed = balls.get(0).getModel().getOriginalSpeed();
 
         // Nếu bóng đang nhanh, khôi phục lại tốc độ
         if (isCurrentlyFast) {
-            for (Ball ball : balls) {
-                ball.setSpeed(trueOriginalSpeed);
+            for (BallView ball : balls) {
+                ball.getModel().setSpeed(trueOriginalSpeed);
             }
         }
     }
     @Override
-    public void update(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void update(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane pane) {
         // Gọi update của cha để đếm ngược thời gian
-        super.update(paddle, balls, blocks, group);
+        super.update(paddle, balls, ballList, blocks, pane);
 
         if (!isActive() || balls.isEmpty()) return;
 
         // Lấy tốc độ gốc 100%
-        double trueOriginalSpeed = balls.get(0).getOriginalSpeed();
+        double trueOriginalSpeed = balls.get(0).getModel().getOriginalSpeed();
 
         // 1. Nếu BlinkBall đang bật...
         if (GameState.blinkBallActive) {
             // ...và nếu bóng đang nhanh...
             if (isCurrentlyFast) {
                 // ...hãy "tạm dừng" nó (trả về tốc độ gốc)
-                for (Ball ball : balls) {
-                    ball.setSpeed(trueOriginalSpeed);
+                for (BallView ball : balls) {
+                    ball.getModel().setSpeed(trueOriginalSpeed);
                 }
                 isCurrentlyFast = false; // Đánh dấu là đã tạm dừng
             }
@@ -62,8 +64,8 @@ public class PowerFastBall extends PowerUp {
             // ...và nếu bóng đang KHÔNG nhanh...
             if (!isCurrentlyFast) {
                 // ...hãy "kích hoạt" hiệu ứng (tăng tốc)
-                for (Ball ball : balls) {
-                    ball.setSpeed(trueOriginalSpeed * FAST_FACTOR);
+                for (BallView ball : balls) {
+                    ball.getModel().setSpeed(trueOriginalSpeed * FAST_FACTOR);
                 }
                 isCurrentlyFast = true; // Đánh dấu là đang nhanh
             }

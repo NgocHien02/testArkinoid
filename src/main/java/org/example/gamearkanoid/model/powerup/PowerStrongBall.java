@@ -1,11 +1,13 @@
 package org.example.gamearkanoid.model.powerup;
 
-import javafx.scene.Group;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.BlockBrick;
 import org.example.gamearkanoid.model.GameState;
-import org.example.gamearkanoid.model.Paddle;
+import org.example.gamearkanoid.view.BallView;
+import org.example.gamearkanoid.view.PaddleView;
+
 import java.util.List;
 
 public class PowerStrongBall extends PowerUp {
@@ -17,18 +19,18 @@ public class PowerStrongBall extends PowerUp {
     }
 
     @Override
-    public void applyEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void applyEffect(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane pane) {
         GameState.strongBallArmed = true;
     }
 
     @Override
-    public void removeEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void removeEffect(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane pane) {
         // Khi hết giờ, tắt cả 2 cờ
         GameState.strongBallActive = false;
         GameState.strongBallArmed = false;
     }
     @Override
-    public void update(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void update(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane pane) {
 
         // 1. Kiểm tra xem chúng ta có đang ở trạng thái "lên đạn" (armed) không
         if (GameState.strongBallArmed) {
@@ -48,7 +50,7 @@ public class PowerStrongBall extends PowerUp {
                 // -> KHÔNG GỌI super.update()
                 // -> Chỉ gọi logic rơi (nếu chưa nhặt)
                 if (!isCollected()) {
-                    super.update(paddle, balls, blocks, group);
+                    super.update(paddle, balls, ballList, blocks, pane);
                 }
                 return; // Bỏ qua việc đếm ngược timer
             }
@@ -56,7 +58,7 @@ public class PowerStrongBall extends PowerUp {
 
         // 3. Nếu chúng ta không "armed" (hoặc vừa được kích hoạt),
         // thì chạy logic update bình thường của lớp cha (để đếm ngược timer)
-        super.update(paddle, balls, blocks, group);
+        super.update(paddle, balls, ballList,  blocks, pane);
     }
 
     @Override

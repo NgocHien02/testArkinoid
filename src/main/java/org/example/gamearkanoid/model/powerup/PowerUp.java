@@ -1,11 +1,12 @@
 package org.example.gamearkanoid.model.powerup;
 
-import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import org.example.gamearkanoid.model.Ball;
 import org.example.gamearkanoid.model.BlockBrick;
-import org.example.gamearkanoid.model.Paddle;
+import org.example.gamearkanoid.view.BallView;
+import org.example.gamearkanoid.view.PaddleView;
 
 import java.util.List;
 
@@ -33,12 +34,12 @@ public abstract class PowerUp {
     /**
      * Cập nhật trạng thái của Power-Up mỗi frame.
      */
-    public void update(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void update(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane group) {
         if (collected) {
             if (active && durationInFrames > 0) {
                 timer--;
                 if (timer <= 0) {
-                    this.removeEffect(paddle, balls, blocks, group);
+                    this.removeEffect(paddle, balls, ballList, blocks, group);
                     this.active = false;
                 }
             }
@@ -51,14 +52,14 @@ public abstract class PowerUp {
     /**
      * Kích hoạt hiệu ứng khi được nhặt.
      */
-    public void activate(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group) {
+    public void activate(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane group) {
         this.collected = true;
         this.active = true;
-        this.applyEffect(paddle, balls, blocks, group);
+        this.applyEffect(paddle, balls, ballList, blocks, group);
     }
 
-    public boolean checkPaddleCollision(Paddle paddle) {
-        if (!collected && imageView.getBoundsInParent().intersects(paddle.getPaddleImgView().getBoundsInParent())) {
+    public boolean checkPaddleCollision(PaddleView paddle) {
+        if (!collected && imageView.getBoundsInParent().intersects(paddle.getImageView().getBoundsInParent())) {
             collected = true;
             return true;
         }
@@ -74,8 +75,8 @@ public abstract class PowerUp {
     }
 
     // --- Các phương thức trừu tượng
-    public abstract void applyEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group);
-    public abstract void removeEffect(Paddle paddle, List<Ball> balls, BlockBrick blocks, Group group);
+    public abstract void applyEffect(PaddleView paddle, List<BallView> balls,List<Ball> ballList, BlockBrick blocks, Pane group);
+    public abstract void removeEffect(PaddleView paddle, List<BallView> balls, List<Ball> ballList, BlockBrick blocks, Pane group);
 
     /**
      * Phương thức trừu tượng, buộc các lớp con phải định danh xem chúng thuộc loại Power-Up nào.

@@ -7,6 +7,8 @@ import javafx.scene.shape.Rectangle;
 
 public class Paddle extends  Sprite{
 
+    private double originalWidth;
+
     enum PaddleState{
         GO_LEFT,
         GO_RIGHT,
@@ -18,6 +20,7 @@ public class Paddle extends  Sprite{
         super(x, y, 100, 50);
         speed = 5;
         currentState = PaddleState.IDLE;
+        this.originalWidth = getWidth();
     }
 
     @Override
@@ -38,12 +41,14 @@ public class Paddle extends  Sprite{
                 break;
             case IDLE:
                 setDirection(0, 0);
+                break;
+            case MOUSE_DRAG:
+                // update in mouseDrag
+                break;
             default:
                 setDirection(0, 0);
         }
         if (!inScreen()) {
-            System.out.println(getX() + " " + getY());
-
             setDirection(0, 0);
             if (getX() <= 0) {
                 setX(0);
@@ -51,7 +56,6 @@ public class Paddle extends  Sprite{
             else {
                 setX(screenWidth - getWidth());
             }
-            System.out.println(getX() + " " + getY());
         }
     }
 
@@ -71,10 +75,11 @@ public class Paddle extends  Sprite{
         setCurrentState(PaddleState.IDLE);
     }
 
-    public void setGoLeft(boolean goLeft) {
-        this.goLeft = goLeft;
-    }
 
+    public void mouseDrag(double x) {
+        setCurrentState(PaddleState.MOUSE_DRAG);
+        this.setX(x);
+    }
     //Lấy chiều rộng gốc 100% của paddle
     public double getOriginalWidth() {
         return originalWidth;

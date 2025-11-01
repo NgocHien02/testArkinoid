@@ -14,8 +14,8 @@ public class Ball extends Sprite {
     private Brick brick;
 //    private List<Brick> targetList;
     private BlockBrick blockBrick;
-    private double ANGLE_SENSITIVITY = 1.0;
-    private double PADDLE_INFLUENCE = 0.4;
+    private double ANGLE_SENSITIVITY = 0.5;
+    private double PADDLE_INFLUENCE = 0.2;
 
     public enum BallState{
         MOVING,
@@ -27,7 +27,7 @@ public class Ball extends Sprite {
         super(x, y, 30, 30);
         dirX = 1;
         dirY = 1;
-        speed = 2.5;
+        speed = 1;
         currentState = new SimpleObjectProperty<>(BallState.MOVING);
     }
 
@@ -122,6 +122,12 @@ public class Ball extends Sprite {
         else if (getY() + getHeight() >= screenHeight) {
             // Bóng đã rơi ra khỏi màn hình
             // Bạn có thể đặt lại vị trí bóng hoặc xử lý thua ở đây
+            if (GameState.shieldActive) {
+                setDirection(dirX, -dirY); // Bật ngược lên
+                setY(screenHeight - getHeight()); // Kẹp lại vị trí
+                GameState.shieldActive = false; // Tắt khiên (chỉ dùng 1 lần)
+
+            }
             return false;
         }
 
@@ -136,6 +142,15 @@ public class Ball extends Sprite {
 
 
     public void boundBrick() {
+
+        // Kiểm tra xem bóng đã "lên đạn" (armed) chưa
+        if (GameState.strongBallArmed) {
+            GameState.strongBallActive = true; // Kích hoạt hiệu ứng NGAY BÂY GIỜ
+            GameState.strongBallArmed = false;  // Và dùng hết "đạn"
+        }
+        // --- SỬA ĐỔI LOGIC VA CHẠM (Hỗ trợ StrongBall) ---
+        // Chỉ đổi hướng nếu bóng KHÔNG mạnh
+        if (GameState.strongBallActive) {return;}
 
         // --- 1. TÍNH TOÁN ĐỘ LÚN (OVERLAP) ---
         double c1x = this.getCenterX();
@@ -198,20 +213,6 @@ public class Ball extends Sprite {
                 }
                 return true;
             }
-        // --- SỬA ĐỔI LOGIC BIÊN DƯỚI (Hỗ trợ PowerShield) ---
-        if (ball.getY() + ball.getFitHeight() > sceneHeight) {
-            // 1. Kiểm tra xem Shield có đang hoạt động không
-            if (GameState.shieldActive) {
-                setDirectionY(-1); // Bật ngược lên
-                ball.setY(sceneHeight - ball.getFitHeight()); // Kẹp lại vị trí
-                GameState.shieldActive = false; // Tắt khiên (chỉ dùng 1 lần)
-
-            } else {
-                // 2. Logic Game Over như cũ
-                setDirectionY(0);
-                setDirectionX(0);
-                ball.setY(sceneHeight - ball.getFitHeight());
-            }
         }
         return false;
     }
@@ -246,57 +247,36 @@ public class Ball extends Sprite {
         // B.3. Thêm ảnh hưởng từ tốc độ của paddle
         double new_vx = base_vx + (paddle_vx * PADDLE_INFLUENCE);
 
-        for (Brick brick : block.getBlock()) {
-            if (ball.getBoundsInParent().intersects(brick.getBrickImageView().getBoundsInParent())) {
-                // Kiểm tra xem bóng đã "lên đạn" (armed) chưa
-                if (GameState.strongBallArmed) {
-                    GameState.strongBallActive = true; // Kích hoạt hiệu ứng NGAY BÂY GIỜ
-                    GameState.strongBallArmed = false;  // Và dùng hết "đạn"
-                }
-                // --- SỬA ĐỔI LOGIC VA CHẠM (Hỗ trợ StrongBall) ---
-                // Chỉ đổi hướng nếu bóng KHÔNG mạnh
-                if (!GameState.strongBallActive) {
-                    double ballCenterX = ball.getX() + ball.getFitWidth() / 2;
-                    double ballCenterY = ball.getY() + ball.getFitHeight() / 2;
-                    double brickCenterX = brick.getX() + brick.getWidth() / 2;
-                    double brickCenterY = brick.getY() + brick.getHeight() / 2;
 
         // --- 3. CẬP NHẬT LẠI BÓNG ---
 
-        // A. Tính tốc độ mới (speed)
-        // Tốc độ mới sẽ thay đổi dựa trên new_vx và new_vy
-        double new_speed = Math.sqrt(new_vx * new_vx + new_vy * new_vy);
-        this.speed = new_speed;
+        double new_vector_magnitude = Math.sqrt(new_vx * new_vx + new_vy * new_vy);
 
-        // B. Chuẩn hóa và cập nhật hướng mới (dirx, diry)
-        if (new_speed > 0) {
-            setDirection(new_vx / new_speed, new_vy / new_speed);
+// B. Chuẩn hóa và cập nhật hướng mới (dirx, diry)
+//    Chúng ta KHÔNG thay đổi "this.speed"
+        if (new_vector_magnitude > 0) {
+            // Lấy hướng mới bằng cách chia cho độ lớn của vector
+            setDirection(new_vx / new_vector_magnitude,
+                    new_vy / new_vector_magnitude);
         } else {
-            // Trường hợp hiếm gặp: bóng dừng lại
-            setDirection(0, 0);
+            // Trường hợp hiếm gặp: bóng dừng lại (nếu new_vx và new_vy đều là 0)
+            // Đặt cho nó nảy thẳng lên
+            setDirection(0, -1);
         }
-
-        for (Brick b : toRemove) {
-            group.getChildren().remove(b.getBrickImageView());
-            block.getBlock().remove(b);
-        }
-
-        return brokenBrick; // Trả về gạch đã vỡ
-    }
-
-    //Lấy tốc độ gốc 100% của bóng.
-    public double getOriginalSpeed() {
-        return originalSpeed;
-    }
-
-    public double getSpeed() {
-        return speed;
-    }
-
         // --- 4. (RẤT QUAN TRỌNG) XỬ LÝ CHỒNG LẤN ---
         // Đẩy bóng ra khỏi paddle để tránh bị dính ở khung hình sau.
         // Giả sử bóng va chạm với mặt TRÊN của paddle.
         setY(paddle.getY() - getHeight());
+
+    }
+
+    //Lấy tốc độ gốc 100% của bóng.
+    public double getOriginalSpeed() {
+        return speed;
+    }
+
+    public double getSpeed() {
+        return speed;
     }
 
     public BallState getCurrentState() {
@@ -309,6 +289,10 @@ public class Ball extends Sprite {
 
     public void setCurrentState(BallState currentState) {
         this.currentState.set(currentState);
+    }
+
+    public Brick getBrick() {
+        return brick;
     }
 }
 
