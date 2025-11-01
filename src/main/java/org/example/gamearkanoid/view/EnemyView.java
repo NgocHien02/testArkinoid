@@ -37,7 +37,7 @@ public class EnemyView extends BaseView<Enemy> {
 
 
     // Cập nhật logic animation (chuyển frame)
-    public void update(double delta) {
+    public void updateFrame(double delta) {
         if (model.isAlive() == false) {
             return;
         }

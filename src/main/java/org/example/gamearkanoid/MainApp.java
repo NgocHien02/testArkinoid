@@ -80,8 +80,8 @@ public class MainApp extends Application {
             try {
                 initGame();
                 mainController.setupInputHandlers(scene);
-                mainController.runGame();
                 currentState = GameState.PLAYING;
+                mainController.runGame();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

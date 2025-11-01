@@ -45,7 +45,9 @@ public class MainController {
     private BlockView blockView;
     private List<Ball> ballList;
     private List<BallView> ballViewList;
+    private EnemyManager enemyManager;
     private AnimationTimer animationTimer;
+
 //    private Scene scene;
     private GameMap gameMap;
 //    private Pane pane;
@@ -57,6 +59,7 @@ public class MainController {
     // Đối tượng quản lý chuyên biệt cho Power-Up
     private PowerUpManager powerUpManager;
     private double originPositionX;
+    private long lastFrameTime;
 
 
     @FXML
@@ -88,6 +91,7 @@ public class MainController {
         ballViewList = new ArrayList<>();
         ballViewList.add(ballView);
         ballList.add(ball);
+        enemyManager = new EnemyManager();
         this.powerUpManager = new PowerUpManager(gamePane);
 
 
@@ -97,24 +101,30 @@ public class MainController {
     }
 
     public void runGame() {
+        lastFrameTime = System.nanoTime();
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                // calculate delta
-                double delta = (now - lastUpdate) / 1_000_000_000.0;
-                lastUpdate = now;
+                long currentFrameTime = System.nanoTime(); // Lấy thời điểm hiện tại
+                long timeElapsed = currentFrameTime - lastFrameTime; // Thời gian trôi qua (nano giây)
+
+                // Chuyển đổi nano giây sang GIÂY (đây chính là delta)
+                double delta = timeElapsed / 1_000_000_000.0;
+
+                lastFrameTime = currentFrameTime;
                 // update game
-                updateGame();
+                updateGame(delta);
             }
         };
         animationTimer.start();
     }
 
-    public void updateGame() {
+    public void updateGame(double delta) {
         handleInput();
         ballUpdate();
         paddle.update();
         paddleView.update();
+        enemyManager.update(block.getBlock(), paddle, gamePane, delta);
         block.update();
         blockView.update(gamePane);
     }
@@ -225,4 +235,6 @@ public class MainController {
     public Pane getGamePane() {
         return gamePane;
     }
+
+
 }

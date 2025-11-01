@@ -56,9 +56,9 @@ public class HelloApplication extends Application {
 
                 lastFrameTime = currentFrameTime;
                 enemy.update();
-                eView.update(delta);
+                eView.updateFrame(delta);
 
-                ball.update();
+//                ball.update();
                 paddle.update();
                 paddleView.update();
 //                controller.dragPaddle(paddle);

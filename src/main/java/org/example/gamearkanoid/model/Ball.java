@@ -27,7 +27,7 @@ public class Ball extends Sprite {
         super(x, y, 30, 30);
         dirX = 1;
         dirY = 1;
-        speed = 1;
+        speed = 3;
         currentState = new SimpleObjectProperty<>(BallState.MOVING);
     }
 
@@ -128,6 +128,7 @@ public class Ball extends Sprite {
                 GameState.shieldActive = false; // Tắt khiên (chỉ dùng 1 lần)
 
             }
+            setAlive(false);
             return false;
         }
 
@@ -207,10 +208,6 @@ public class Ball extends Sprite {
         for (Brick target : list) {
             if (checkCollision(target)) {
                 this.brick = target;
-                this.brick.takeDamage();
-                if (brick.isAlive() == false) {
-                    list.remove(target);
-                }
                 return true;
             }
         }
