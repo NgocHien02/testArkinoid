@@ -35,7 +35,7 @@ public class HelloApplication extends Application {
         PaddleView paddleView = new PaddleView(paddle);
         Ball ball = new Ball(200, 200);
         ball.setPaddle(paddle);
-        ball.setTargetList(list);
+//        ball.setTargetList(list);
         BallView ballView = new BallView(ball);
 
         Enemy enemy = new Enemy(0, 0, 50, 50, paddle);

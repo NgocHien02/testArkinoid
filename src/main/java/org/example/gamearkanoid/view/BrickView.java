@@ -20,6 +20,7 @@ public class BrickView extends BaseView<Brick>{
     public void update() {
         if (model.getInitialHealth() == 2 && model.getHealth() == 1) {
             image = BlockView.getImageForType(201);
+            this.imageView.setImage(image);
         }
 //        // Nếu là gạch 3 máu ban đầu
 //        if (initialHealth == 3) {
@@ -29,6 +30,6 @@ public class BrickView extends BaseView<Brick>{
 //                newImage = blockBrickManager.getImageForType(301); // Lấy ảnh "3_cracked_2"
 //            }
 //        }
-        this.imageView.setImage(image);
     }
+
 }

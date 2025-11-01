@@ -11,8 +11,8 @@ import java.util.Map;
 
 public class BlockBrick  {
     private List<Brick> block;
-    private double dx = 10;
-    private double dy = 10;
+    private double dx = 0;
+    private double dy = 0;
 
 
 
@@ -60,4 +60,11 @@ public class BlockBrick  {
         return block.isEmpty();
     }
 
+    public void update() {
+        for (Brick brick : block) {
+            if (brick.isAlive() == false) {
+                block.remove(brick);
+            }
+        }
+    }
 }

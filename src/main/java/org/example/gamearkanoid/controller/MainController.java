@@ -104,6 +104,8 @@ public class MainController {
         ballView.update();
         paddle.update();
         paddleView.update();
+        block.update();
+        blockView.update(gamePane);
     }
 
     private void handleInput() {
@@ -160,4 +162,7 @@ public class MainController {
         paddleView.getImageView().setOnMouseDragged(paddleDrag);
     }
 
+    public Pane getGamePane() {
+        return gamePane;
+    }
 }

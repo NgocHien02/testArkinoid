@@ -88,6 +88,7 @@ public class Ball extends Sprite {
                 move();
                 break;
             default:
+                move();
                 break;
         }
     }
@@ -191,6 +192,7 @@ public class Ball extends Sprite {
         for (Brick target : list) {
             if (checkCollision(target)) {
                 this.brick = target;
+                this.brick.takeDamage();
                 if (brick.isAlive() == false) {
                     list.remove(target);
                 }

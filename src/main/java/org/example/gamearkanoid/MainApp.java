@@ -19,6 +19,8 @@ public class MainApp extends Application {
     private Scene scene;
     private StackPane rootPane;
     private Stage mainStage;
+    AnchorPane anchorPane;
+
 
     // Khai báo các đối tượng menu
     private GameMenu gameMenu;
@@ -79,7 +81,6 @@ public class MainApp extends Application {
                 initGame();
                 mainController.setupInputHandlers(scene);
                 mainController.runGame();
-//                mainController.pauseGame();
                 currentState = GameState.PLAYING;
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -94,7 +95,7 @@ public class MainApp extends Application {
     public void initGame() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/gamearkanoid/game-view.fxml"));
 
-        AnchorPane anchorPane = loader.load();
+       anchorPane = loader.load();
         mainController = loader.getController();
         anchorPane.setVisible(true);
         anchorPane.toFront();

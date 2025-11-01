@@ -42,4 +42,7 @@ public abstract class BaseView<T extends Sprite> {
         return new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)), width, height,true, false);
     }
 
+    public T getModel() {
+        return model;
+    }
 }
