@@ -198,6 +198,20 @@ public class Ball extends Sprite {
                 }
                 return true;
             }
+        // --- SỬA ĐỔI LOGIC BIÊN DƯỚI (Hỗ trợ PowerShield) ---
+        if (ball.getY() + ball.getFitHeight() > sceneHeight) {
+            // 1. Kiểm tra xem Shield có đang hoạt động không
+            if (GameState.shieldActive) {
+                setDirectionY(-1); // Bật ngược lên
+                ball.setY(sceneHeight - ball.getFitHeight()); // Kẹp lại vị trí
+                GameState.shieldActive = false; // Tắt khiên (chỉ dùng 1 lần)
+
+            } else {
+                // 2. Logic Game Over như cũ
+                setDirectionY(0);
+                setDirectionX(0);
+                ball.setY(sceneHeight - ball.getFitHeight());
+            }
         }
         return false;
     }
@@ -232,6 +246,20 @@ public class Ball extends Sprite {
         // B.3. Thêm ảnh hưởng từ tốc độ của paddle
         double new_vx = base_vx + (paddle_vx * PADDLE_INFLUENCE);
 
+        for (Brick brick : block.getBlock()) {
+            if (ball.getBoundsInParent().intersects(brick.getBrickImageView().getBoundsInParent())) {
+                // Kiểm tra xem bóng đã "lên đạn" (armed) chưa
+                if (GameState.strongBallArmed) {
+                    GameState.strongBallActive = true; // Kích hoạt hiệu ứng NGAY BÂY GIỜ
+                    GameState.strongBallArmed = false;  // Và dùng hết "đạn"
+                }
+                // --- SỬA ĐỔI LOGIC VA CHẠM (Hỗ trợ StrongBall) ---
+                // Chỉ đổi hướng nếu bóng KHÔNG mạnh
+                if (!GameState.strongBallActive) {
+                    double ballCenterX = ball.getX() + ball.getFitWidth() / 2;
+                    double ballCenterY = ball.getY() + ball.getFitHeight() / 2;
+                    double brickCenterX = brick.getX() + brick.getWidth() / 2;
+                    double brickCenterY = brick.getY() + brick.getHeight() / 2;
 
         // --- 3. CẬP NHẬT LẠI BÓNG ---
 
@@ -247,6 +275,23 @@ public class Ball extends Sprite {
             // Trường hợp hiếm gặp: bóng dừng lại
             setDirection(0, 0);
         }
+
+        for (Brick b : toRemove) {
+            group.getChildren().remove(b.getBrickImageView());
+            block.getBlock().remove(b);
+        }
+
+        return brokenBrick; // Trả về gạch đã vỡ
+    }
+
+    //Lấy tốc độ gốc 100% của bóng.
+    public double getOriginalSpeed() {
+        return originalSpeed;
+    }
+
+    public double getSpeed() {
+        return speed;
+    }
 
         // --- 4. (RẤT QUAN TRỌNG) XỬ LÝ CHỒNG LẤN ---
         // Đẩy bóng ra khỏi paddle để tránh bị dính ở khung hình sau.

@@ -71,7 +71,12 @@ public class Paddle extends  Sprite{
         setCurrentState(PaddleState.IDLE);
     }
 
-//    public boolean checkLeft() {
-//
-//    }
+    public void setGoLeft(boolean goLeft) {
+        this.goLeft = goLeft;
+    }
+
+    //Lấy chiều rộng gốc 100% của paddle
+    public double getOriginalWidth() {
+        return originalWidth;
+    }
 }
