@@ -113,6 +113,5 @@ public class BlockView {
                 break;
             }
         }
-        System.out.println("update");
     }
 }
